@@ -64,6 +64,7 @@
    =================================== */
 
 .solucoes__viz {
+  position: relative;
   width: 100%;
   max-width: 1400px;
   min-height: 600px;
@@ -73,7 +74,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
 }
 
 .solucoes__svg {
@@ -308,7 +308,10 @@
    =================================== */
 
 .solucoes__details {
-  flex-shrink: 0;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 320px;
   height: 380px;
   padding: 24px;
@@ -319,12 +322,15 @@
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   text-align: left;
-  opacity: 0.4;
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s ease;
+  z-index: 50;
 }
 
 .solucoes__details--visible {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .solucoes__details-title {
