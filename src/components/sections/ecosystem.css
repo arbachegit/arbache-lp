@@ -116,6 +116,7 @@
 .ecosystem__panel-icon {
   font-size: 32px;
   line-height: 1;
+  color: var(--muted);
 }
 
 .ecosystem__panel-title {
