@@ -264,11 +264,37 @@ export function SolucoesOrganizacoes() {
           </p>
         </div>
 
-        <div
-          ref={svgRef}
-          className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
-          onMouseMove={handleMouseMove}
-        >
+        {/* Layout horizontal: painel à esquerda, diagrama à direita */}
+        <div className="solucoes__layout">
+          {/* Left Side Panel - Shows on Hover */}
+          <div
+            id="solucoes-details"
+            className={cn(
+              'solucoes__details',
+              hoveredNode && hoveredNode !== 'hub' && 'solucoes__details--visible'
+            )}
+            aria-live="polite"
+          >
+            {hoveredNode && hoveredNode !== 'hub' && nodesData[hoveredNode] ? (
+              <>
+                <h3 className="solucoes__details-title">
+                  {nodesData[hoveredNode].title}
+                </h3>
+                <p className="solucoes__details-desc">
+                  {nodesData[hoveredNode].description}
+                </p>
+              </>
+            ) : (
+              <p className="solucoes__details-placeholder">
+                Passe o mouse sobre uma solução para ver detalhes.
+              </p>
+            )}
+          </div>
+
+          <div
+            ref={svgRef}
+            className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
+          >
           <svg
             id="solucoes-svg"
             className="solucoes__svg"
@@ -292,21 +318,27 @@ export function SolucoesOrganizacoes() {
               </filter>
             </defs>
 
-            {/* Ghost 2 Buffer - renderizado ANTES das linhas (fica atrás) */}
+            {/* Ghost Buffer - área de hover estável que cobre nó original + expandido */}
             {allNodes.map((node) => {
               const isExpanded = hoveredNode === node.id
-              if (!isExpanded) return null
+              const expandedPos = expandedPositions[node.id]
+              // Centro entre posição original e expandida
+              const centerX = (node.cx + expandedPos.cx) / 2
+              const centerY = (node.cy + expandedPos.cy) / 2
+              // Raio grande o suficiente para cobrir ambas posições
+              const coverRadius = EXPAND_DISTANCE + EXPANDED_RADIUS + 10
 
               return (
                 <circle
-                  key={`ghost2-${node.id}`}
-                  className="solucoes__ghost solucoes__ghost--buffer"
-                  cx={node.cx}
-                  cy={node.cy}
-                  r={GHOST_2_RADIUS}
-                  fill="#141418"
+                  key={`ghost-${node.id}`}
+                  className="solucoes__ghost-area"
+                  cx={centerX}
+                  cy={centerY}
+                  r={coverRadius}
+                  fill="transparent"
                   onMouseEnter={() => setHoveredNode(node.id)}
                   onMouseLeave={() => setHoveredNode(null)}
+                  style={{ cursor: 'pointer' }}
                 />
               )
             })}
@@ -402,24 +434,6 @@ export function SolucoesOrganizacoes() {
                 ORGANIZAÇÕES
               </text>
             </g>
-
-            {/* Ghost 1 Anchor (âncora branca visível) - na frente da linha */}
-            {allNodes.map((node) => {
-              const isExpanded = hoveredNode === node.id
-              if (!isExpanded) return null
-
-              return (
-                <circle
-                  key={`ghost1-${node.id}`}
-                  className="solucoes__ghost solucoes__ghost--anchor"
-                  cx={node.cx}
-                  cy={node.cy}
-                  r={GHOST_1_RADIUS}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                />
-              )
-            })}
 
             {/* All 11 Orbital Nodes */}
             {allNodes.map((node) => {
@@ -526,86 +540,7 @@ export function SolucoesOrganizacoes() {
               )
             })}
           </svg>
-
-          {/* Hover Tooltip */}
-          {hoveredNode && hoveredNode !== 'hub' && tooltipPos && nodesData[hoveredNode] && (
-            <div
-              className="solucoes__tooltip"
-              style={{
-                position: 'fixed',
-                left: tooltipPos.x + 20,
-                top: tooltipPos.y - 190,
-                width: '320px',
-                height: '380px',
-                backgroundColor: '#141418',
-                border: '2px solid white',
-                borderRadius: '16px',
-                padding: '24px',
-                zIndex: 1000,
-                pointerEvents: 'none',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <h4
-                style={{
-                  fontSize: '25px',
-                  fontWeight: 700,
-                  color: 'white',
-                  marginBottom: '16px',
-                  fontFamily: 'Lato, sans-serif',
-                  lineHeight: 1.2,
-                }}
-              >
-                {nodesData[hoveredNode].title}
-              </h4>
-              <p
-                style={{
-                  fontSize: '20px',
-                  fontWeight: 400,
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  fontFamily: 'Lato, sans-serif',
-                  lineHeight: 1.5,
-                  flex: 1,
-                }}
-              >
-                {nodesData[hoveredNode].description}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Details Panel */}
-        <div
-          id="solucoes-details"
-          className={cn(
-            'solucoes__details',
-            selectedNodeData && 'solucoes__details--visible'
-          )}
-          aria-live="polite"
-        >
-          {selectedNodeData ? (
-            <>
-              <h3 className="solucoes__details-title">
-                {selectedNodeData.title}
-              </h3>
-              <p className="solucoes__details-desc">
-                {selectedNodeData.description}
-              </p>
-              <button
-                className="solucoes__details-close"
-                onClick={() => setSelectedNode(null)}
-                aria-label="Fechar detalhes"
-              >
-                Fechar
-              </button>
-            </>
-          ) : (
-            <p className="solucoes__details-placeholder">
-              Selecione uma solução para ver detalhes.
-            </p>
-          )}
+          </div>
         </div>
       </div>
     </section>

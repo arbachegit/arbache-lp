@@ -1,0 +1,337 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "ARBACHE CONSULTING" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+      - navigation [ref=e5]:
+        - link "Propósito" [ref=e6] [cursor=pointer]:
+          - /url: "#proposito"
+        - link "Quem Somos" [ref=e7] [cursor=pointer]:
+          - /url: "#quem-somos"
+        - link "Ecossistema" [ref=e8] [cursor=pointer]:
+          - /url: "#ecossistema"
+        - link "Soluções" [ref=e9] [cursor=pointer]:
+          - /url: "#solucoes-org"
+        - link "ESG" [ref=e10] [cursor=pointer]:
+          - /url: "#esg"
+        - link "Contato" [ref=e11] [cursor=pointer]:
+          - /url: "#contato"
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - heading "Educação de Liderança nos move Inovação impulsiona resultados Sustentabilidade transforma o ser humano e os negócios" [level=1] [ref=e15]:
+        - generic [ref=e16]: Educação de Liderança nos move
+        - generic [ref=e17]: Inovação impulsiona resultados
+        - generic [ref=e18]: Sustentabilidade transforma o ser humano e os negócios
+      - paragraph [ref=e19]: Educação de excelência, liderança consciente e sustentabilidade para gerar resultados de alto desempenho
+      - generic [ref=e20]:
+        - link "Conheça Nossas Soluções" [ref=e21] [cursor=pointer]:
+          - /url: "#solucoes-org"
+        - link "Fale Conosco" [ref=e22] [cursor=pointer]:
+          - /url: "#contato"
+      - generic [ref=e23]:
+        - generic [ref=e24]: MIT Professional Education
+        - generic [ref=e25]: FGV/IDE
+        - generic [ref=e26]: SDG Pioneer ONU 2023
+        - generic [ref=e27]: PUC-SP
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - heading "Nosso Propósito" [level=2] [ref=e32]
+        - paragraph [ref=e33]: “Mudar o mundo por meio da educação, transformando conhecimento em resultados!”
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - heading "Missão" [level=3] [ref=e36]
+          - paragraph [ref=e37]: Promover educação de excelência e personalizada para negócios, lideranças e talentos, integrando rigor acadêmico, práticas de mercado, inovação tecnológica, conexões e sustentabilidade, para desenvolver lideranças conscientes e gerar resultados de alto desempenho.
+        - generic [ref=e38]:
+          - heading "Visão" [level=3] [ref=e39]
+          - paragraph [ref=e40]: Ser referência em educação em negócios, reconhecida pela excelência e personalização na formação de lideranças e talentos conscientes e inovadores, que geram resultados de alto desempenho.
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: —
+          - generic [ref=e44]: Líderes Desenvolvidos
+        - generic [ref=e45]:
+          - generic [ref=e46]: —
+          - generic [ref=e47]: Anos de Docência
+        - generic [ref=e48]:
+          - generic [ref=e49]: —
+          - generic [ref=e50]: Livros Publicados
+        - generic [ref=e51]:
+          - generic [ref=e52]: —
+          - generic [ref=e53]: SDG Pioneer ONU
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - strong [ref=e56]: Excelência
+          - generic [ref=e57]: — Padrões elevados em conteúdo acadêmico, experiência de mercado e parcerias internacionais.
+        - generic [ref=e58]:
+          - strong [ref=e59]: Personalização
+          - generic [ref=e60]: — Experiências de aprendizagem e iniciativas educacionais inovadoras e sob medida.
+        - generic [ref=e61]:
+          - strong [ref=e62]: Consciência Ética
+          - generic [ref=e63]: — Relações sólidas baseadas em valores éticos e compartilhamento de propósito.
+        - generic [ref=e64]:
+          - strong [ref=e65]: Valor Compartilhado
+          - generic [ref=e66]: — Parceiros na formação de líderes responsáveis com compromisso social.
+        - generic [ref=e67]:
+          - strong [ref=e68]: Inovação com Propósito
+          - generic [ref=e69]: — Tecnologia e IA para gerar impacto real e sustentável.
+        - generic [ref=e70]:
+          - strong [ref=e71]: Conexão com o Mercado
+          - generic [ref=e72]: — Integração com executivos e desafios reais dos negócios.
+        - generic [ref=e73]:
+          - strong [ref=e74]: Aprendizado Contínuo
+          - generic [ref=e75]: — Desenvolvimento permanente como base da alta performance.
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - heading "Quem Somos" [level=2] [ref=e80]
+        - paragraph [ref=e81]: Educação, inovação e sustentabilidade reunidas em uma equipe de excelência
+      - generic [ref=e82]:
+        - generic [ref=e83] [cursor=pointer]:
+          - img [ref=e86]
+          - generic [ref=e90]:
+            - heading "Ana Paula Arbache" [level=3] [ref=e91]
+            - generic [ref=e92]: CEO & Fundadora · PhD · SDG Pioneer UN
+            - paragraph [ref=e93]: “Eu sou educadora de formação e acredito que a evolução humana é decorrente da relação mútua entre o conhecimento e os seres humanos.”
+        - generic [ref=e94] [cursor=pointer]:
+          - img [ref=e97]
+          - generic [ref=e102]:
+            - heading "Fernando Arbache" [level=3] [ref=e103]
+            - generic [ref=e104]: Inovação · Tecnologia · IA · Ciência de Dados
+            - paragraph [ref=e105]: “Aplico o poder da IA e da Ciência de Dados para transformar conhecimento em inovação.”
+        - generic [ref=e106] [cursor=pointer]:
+          - img [ref=e109]
+          - generic [ref=e113]:
+            - heading "Alexandre Vieira" [level=3] [ref=e114]
+            - generic [ref=e115]: Gestão de Pessoas · RH · Educação Corporativa
+            - paragraph [ref=e116]: “Quando você muda sua forma de pensar, você muda tudo.”
+        - generic [ref=e117] [cursor=pointer]:
+          - img [ref=e120]
+          - generic [ref=e123]:
+            - heading "Fernando Bastos" [level=3] [ref=e124]
+            - generic [ref=e125]: Tecnologia · Inovação · Auditoria
+            - paragraph [ref=e126]: “Integrando conhecimento e tecnologia para gerar resultados reais e duradouros.”
+    - generic [ref=e128]:
+      - generic [ref=e129]:
+        - heading "Nosso Ecossistema" [level=2] [ref=e130]
+        - paragraph [ref=e131]: Uma rede integrada de competências, conexões e propósito
+      - img "Visualização do Nosso Ecossistema" [ref=e133]:
+        - button "Núcleo do ecossistema" [ref=e139] [cursor=pointer]:
+          - generic: ARBACHE
+          - generic: CONSULTING
+        - button "Educação e Educação Corporativa" [ref=e142] [cursor=pointer]:
+          - generic: Educação e
+          - generic: Ed. Corporativa
+        - button "Liderança e Gestão de Equipes" [ref=e146] [cursor=pointer]:
+          - generic: Liderança e
+          - generic: Gestão de Equipes
+        - button "Gestão de Carreira e Posicionamento" [ref=e150] [cursor=pointer]:
+          - generic: Gestão de Carreira
+          - generic: e Posicionamento
+        - button "Recursos Humanos e Gestão de Pessoas" [ref=e154] [cursor=pointer]:
+          - generic: Recursos Humanos
+          - generic: e Gestão de Pessoas
+        - button "Inovação, Tecnologia e IA" [ref=e158] [cursor=pointer]:
+          - generic: Inovação,
+          - generic: Tecnologia e IA
+        - button "Sustentabilidade e ESG" [ref=e162] [cursor=pointer]:
+          - generic: Sustentabilidade
+          - generic: e ESG
+      - generic:
+        - paragraph: Selecione um item do ecossistema para ver detalhes.
+    - generic [ref=e167]:
+      - generic [ref=e168]:
+        - heading "Soluções para Organizações" [level=2] [ref=e169]
+        - paragraph [ref=e170]: Conheça nosso ecossistema de soluções integradas
+      - img "Visualização das Soluções para Organizações" [ref=e172]:
+        - button "Núcleo das soluções" [ref=e184] [cursor=pointer]:
+          - generic: ARBACHE
+          - generic: CONSULTING
+          - generic: ORGANIZAÇÕES
+        - button "Trilhas e Programas Educacionais" [ref=e187] [cursor=pointer]:
+          - generic: Trilhas e
+          - generic: Programas
+        - button "Curadoria de Produtos e Certificações" [ref=e191] [cursor=pointer]:
+          - generic: Curadoria e
+          - generic: Certificações
+        - button "Formação de Lideranças" [ref=e195] [cursor=pointer]:
+          - generic: Formação de
+          - generic: Lideranças
+        - button "Assessment Soft Skills + IA" [ref=e199] [cursor=pointer]:
+          - generic: Assessment
+          - generic: Soft Skills
+        - button "Senior Advisor Sustentabilidade e ESG" [ref=e203] [cursor=pointer]:
+          - generic: Senior Advisor
+          - generic: ESG
+        - button "Mentoria de Alto Impacto" [ref=e207] [cursor=pointer]:
+          - generic: Mentoria de
+          - generic: Alto Impacto
+        - button "Auditorias e Relatórios Técnicos" [ref=e211] [cursor=pointer]:
+          - generic: Auditorias e
+          - generic: Relatórios
+        - button "Missões e Imersões Técnicas" [ref=e215] [cursor=pointer]:
+          - generic: Missões e
+          - generic: Imersões
+        - button "Redes e Networking" [ref=e219] [cursor=pointer]:
+          - generic: Redes e
+          - generic: Networking
+        - button "Processos de RH e Gestão" [ref=e223] [cursor=pointer]:
+          - generic: Processos
+          - generic: RH e Gestão
+        - button "Palestras e Painéis" [ref=e227] [cursor=pointer]:
+          - generic: Palestras e
+          - generic: Painéis
+      - generic:
+        - paragraph: Selecione uma solução para ver detalhes.
+    - generic [ref=e233]:
+      - generic [ref=e234]:
+        - heading "Nossos Co-Labs Parceiros" [level=2] [ref=e235]
+        - paragraph [ref=e236]: Parcerias estratégicas que ampliam nosso impacto
+      - generic [ref=e237]:
+        - generic [ref=e238] [cursor=pointer]:
+          - img [ref=e240]
+          - generic [ref=e244]:
+            - heading "Resorts Brasil" [level=3] [ref=e245]
+            - paragraph [ref=e246]: Programa de Formação de Talentos ESG para Hotelaria. Co-criação e coordenação de trilhas de sustentabilidade para o setor.
+        - generic [ref=e247] [cursor=pointer]:
+          - img [ref=e249]
+          - generic [ref=e252]:
+            - heading "Escola Brasileira de Etiqueta" [level=3] [ref=e253]
+            - paragraph [ref=e254]: Certificação Nacional e Internacional em Liderança Feminina e presença executiva em contextos complexos e sofisticados.
+        - generic [ref=e255] [cursor=pointer]:
+          - img [ref=e257]
+          - generic [ref=e260]:
+            - heading "Senac" [level=3] [ref=e261]
+            - paragraph [ref=e262]: Criação e desenvolvimento do Programa ESG para gestão em negócios de hospitalidade.
+        - generic [ref=e263] [cursor=pointer]:
+          - img [ref=e265]
+          - generic [ref=e270]:
+            - heading "MIT Professional Education" [level=3] [ref=e271]
+            - paragraph [ref=e272]: Programas internacionais de liderança e inovação. Colaboração educacional de uma década.
+        - generic [ref=e273] [cursor=pointer]:
+          - img [ref=e275]
+          - generic [ref=e278]:
+            - heading "Hotelier News" [level=3] [ref=e279]
+            - paragraph [ref=e280]: Co-criação e curadoria do evento Hotel Trends ESG.
+        - generic [ref=e281] [cursor=pointer]:
+          - img [ref=e283]
+          - generic [ref=e287]:
+            - heading "Audens Edu" [level=3] [ref=e288]
+            - paragraph [ref=e289]: Curadoria técnica na Escola de Negócios. Senior Advisor independente em educação corporativa.
+    - generic [ref=e292]:
+      - generic [ref=e293]:
+        - heading "Nossas Ações em ESG Corporativo" [level=2] [ref=e294]
+        - paragraph [ref=e295]: Liderança e gestão de voluntariado nas redes
+      - generic [ref=e296]:
+        - generic [ref=e297]:
+          - heading "Coletivo HubMulher" [level=3] [ref=e298]
+          - generic [ref=e299]: Ana Paula Arbache — Fundadora e Presidente do Conselho · 2017–atual
+          - paragraph [ref=e300]: "Coletivo de mulheres focado em carreira feminina: mentoria, networking, formação continuada, liderança feminina, diversidade e inclusão. Realiza o HubMulher Summit e reúne \"Hubers\" — executivas, empreendedoras e especialistas em D&I."
+        - generic [ref=e301]:
+          - heading "Knowledge Hub" [level=3] [ref=e302]
+          - generic [ref=e303]: Fernando Arbache (Fundador/Embaixador) + Ana Paula (Co-fundadora/Presidente) · 2015–atual
+          - paragraph [ref=e304]: Comunidade de lideranças inovadoras atuando globalmente em prol da inovação no Brasil. Voluntariado conectando executivos e empreendedores.
+        - generic [ref=e305]:
+          - heading "Aliança ESG para a Hospitalidade" [level=3] [ref=e306]
+          - generic [ref=e307]: Ana Paula Arbache — Fundadora e Gestora · 2025–atual
+          - paragraph [ref=e308]: Coalizão de profissionais e empresas comprometidos com ESG no setor de hospitalidade, viagens e eventos corporativos.
+      - generic [ref=e309]:
+        - generic [ref=e310]:
+          - img [ref=e312]
+          - heading "SDG Pioneer Global" [level=4] [ref=e317]
+          - paragraph [ref=e318]: ONU · Nova York · Set/2023
+        - generic [ref=e319]:
+          - img [ref=e321]
+          - heading "SDG Pioneer Nacional" [level=4] [ref=e326]
+          - paragraph [ref=e327]: Pacto Global Brasil · Jun/2023
+        - generic [ref=e328]:
+          - img [ref=e330]
+          - heading "Selo Diversidade SP" [level=4] [ref=e334]
+          - paragraph [ref=e335]: Prefeitura SP · 2022, 2023
+        - generic [ref=e336]:
+          - img [ref=e338]
+          - heading "Menção Honrosa" [level=4] [ref=e341]
+          - paragraph [ref=e342]: Rede Governança Brasil · 2023
+    - generic [ref=e344]:
+      - generic [ref=e345]:
+        - heading "Fale Conosco" [level=2] [ref=e346]
+        - paragraph [ref=e347]: Descubra a solução ideal para você e sua organização
+      - generic [ref=e348]:
+        - generic [ref=e349]:
+          - generic [ref=e350]:
+            - generic [ref=e351]: Nome completo
+            - textbox "Seu nome" [ref=e352]
+          - generic [ref=e353]:
+            - generic [ref=e354]: E-mail corporativo
+            - textbox "seu@email.com" [ref=e355]
+          - generic [ref=e356]:
+            - generic [ref=e357]: Telefone / WhatsApp
+            - textbox "(11) 99999-9999" [ref=e358]
+          - generic [ref=e359]:
+            - generic [ref=e360]: Solução de interesse
+            - combobox [ref=e361]:
+              - generic: Selecione...
+              - img
+            - combobox [ref=e362]
+          - generic [ref=e363]:
+            - generic [ref=e364]: Mensagem
+            - textbox "Como podemos ajudar?" [ref=e365]
+          - button "Enviar Mensagem" [ref=e366]
+        - generic [ref=e367]:
+          - heading "Arbache Consulting" [level=3] [ref=e368]
+          - paragraph [ref=e369]:
+            - text: R. Manuel Guedes, 504
+            - text: Itaim Bibi — São Paulo/SP
+          - paragraph [ref=e370]:
+            - text: 📧
+            - link "contato@arbache.com" [ref=e371] [cursor=pointer]:
+              - /url: mailto:contato@arbache.com
+          - paragraph [ref=e372]:
+            - text: 📱
+            - link "WhatsApp" [ref=e373] [cursor=pointer]:
+              - /url: https://wa.me/5511999999999
+          - paragraph [ref=e374]:
+            - link "LinkedIn Ana Paula" [ref=e375] [cursor=pointer]:
+              - /url: https://linkedin.com/in/anapaulaarbache
+            - link "LinkedIn Fernando" [ref=e376] [cursor=pointer]:
+              - /url: https://linkedin.com/in/arbache
+          - generic [ref=e377]:
+            - paragraph [ref=e378]: “Vem mudar o mundo por meio da educação!”
+            - paragraph [ref=e379]: — Ana Paula Arbache
+  - contentinfo [ref=e380]:
+    - link "ARBACHE CONSULTING" [ref=e381] [cursor=pointer]:
+      - /url: "#"
+    - generic [ref=e382]:
+      - link "Propósito" [ref=e383] [cursor=pointer]:
+        - /url: "#proposito"
+      - link "Equipe" [ref=e384] [cursor=pointer]:
+        - /url: "#quem-somos"
+      - link "Soluções" [ref=e385] [cursor=pointer]:
+        - /url: "#solucoes-org"
+      - link "ESG" [ref=e386] [cursor=pointer]:
+        - /url: "#esg"
+      - link "Contato" [ref=e387] [cursor=pointer]:
+        - /url: "#contato"
+    - paragraph [ref=e388]: © 2026 Arbache Consulting. Todos os direitos reservados.
+  - alert [ref=e389]
+  - generic [ref=e390]:
+    - generic [ref=e391]:
+      - generic [ref=e392]:
+        - generic [ref=e393]:
+          - img [ref=e394]
+          - img [ref=e400]
+        - generic [ref=e405]:
+          - heading "Assistente Arbache" [level=3] [ref=e406]
+          - paragraph [ref=e407]: Online
+      - button "Fechar chat" [ref=e408]:
+        - img [ref=e409]
+    - generic [ref=e411]:
+      - paragraph [ref=e414]: Olá, teste
+      - generic [ref=e415]:
+        - img [ref=e417]
+        - paragraph [ref=e423]: Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente em alguns instantes.
+    - generic [ref=e425]:
+      - textbox "Digite sua mensagem..." [ref=e426]
+      - button "Enviar mensagem" [disabled] [ref=e427]:
+        - img [ref=e428]
+```

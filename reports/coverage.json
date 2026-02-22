@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-02-22T02:30:00.000Z",
+  "status": "PASS",
+  "summary": {
+    "totalTests": 25,
+    "passed": 25,
+    "failed": 0,
+    "duration": "23.5s"
+  },
+  "criticalTests": {
+    "smoke": { "status": "pass", "duration": "2.5s" },
+    "navigation": { "status": "pass", "duration": "6.0s", "linksFound": 7, "linksWorking": 7 },
+    "sections": { "status": "pass", "duration": "2.1s", "sectionsFound": 8 },
+    "svgEcosystem": { "status": "pass", "duration": "0.9s", "hubPresent": true, "nodesCount": 7 },
+    "svgSolucoes": { "status": "pass", "duration": "1.4s", "hubPresent": true, "nodesCount": 11 },
+    "hover": { "status": "pass", "duration": "1.7s", "expansionWorking": true },
+    "agentButton": { "status": "pass", "duration": "2.4s", "chatOpens": true },
+    "forms": { "status": "pass", "duration": "1.6s", "fieldsFound": 4 },
+    "responsive": { "status": "pass", "duration": "1.6s", "mobileMenuPresent": true },
+    "accessibility": { "status": "pass", "duration": "1.7s", "mainLandmarks": 1, "navLandmarks": 1, "unlabeledButtons": 0 }
+  },
+  "crawler": {
+    "pagesVisited": ["/"],
+    "totalPages": 1,
+    "actionsExecuted": 0,
+    "elementsInteracted": 20,
+    "hoversExecuted": 21,
+    "formsFound": 1,
+    "errorsFound": 0
+  },
+  "existingTests": {
+    "ecosystem": {
+      "gateC": "pass",
+      "gateD": "pass",
+      "gateE": "pass",
+      "gateA": "pass"
+    },
+    "solucoes": {
+      "gateC": "pass",
+      "gateD": "pass",
+      "gateE": "pass",
+      "gateA": "pass",
+      "gateF": "pass"
+    },
+    "screenshots": {
+      "ecosystem": "pass",
+      "solucoes": "pass",
+      "solucoesHover": "pass"
+    }
+  },
+  "errors": [],
+  "artifacts": {
+    "htmlReport": "playwright-report/",
+    "testResults": "test-results/",
+    "screenshots": "tests/screenshots/"
+  }
+}

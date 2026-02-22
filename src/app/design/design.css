@@ -1,0 +1,1072 @@
+/* ===================================
+   LP CLONE - Design Specification Page
+   Mostra fontes e cores em vez de conteúdo
+   =================================== */
+
+/* ===================================
+   BASE & RESET
+   =================================== */
+
+.lp-clone {
+  font-family: 'Lato', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.clone-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===================================
+   SPEC ANNOTATIONS
+   =================================== */
+
+.spec-annotation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 10px;
+  margin-bottom: 4px;
+  align-items: center;
+}
+
+.spec-font {
+  background: rgba(218, 198, 181, 0.3);
+  color: #DAC6B5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.spec-color {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.spec-size {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.spec-extra {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+.section-bg-spec {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 10px;
+  z-index: 100;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.section-bg-spec.light {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+
+.clone-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 20px 0;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.clone-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.clone-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logo-text {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: white;
+  font-weight: 600;
+}
+
+.clone-nav {
+  display: flex;
+  gap: 28px;
+}
+
+.clone-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.clone-nav-link span:last-child {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===================================
+   HERO
+   =================================== */
+
+.clone-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 96px;
+  background: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80') center/cover no-repeat;
+}
+
+.clone-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.78), rgba(26,26,26,0.55));
+}
+
+.clone-hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 900px;
+  padding: 24px;
+}
+
+.clone-hero-content .section-bg-spec {
+  position: static;
+  display: inline-block;
+  margin-bottom: 40px;
+}
+
+.clone-headline {
+  margin-bottom: 32px;
+  padding: 24px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+.headline-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 16px;
+}
+
+.headline-lines span {
+  font-family: 'Cinzel', serif;
+  font-size: 30px;
+  color: white;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  padding: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.clone-tagline {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.clone-tagline p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8px;
+}
+
+.clone-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.clone-btn {
+  padding: 20px 36px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.clone-btn-primary {
+  background: #000;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.clone-btn-secondary {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.clone-btn span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.clone-btn small {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.clone-badges {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.clone-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+}
+
+.clone-badge span:last-child {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===================================
+   PROPÓSITO
+   =================================== */
+
+.clone-proposito {
+  padding: 100px 0;
+  position: relative;
+  background: linear-gradient(135deg, #3a3a3a, #1a1a1a);
+  color: white;
+}
+
+.clone-section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.title-block,
+.subtitle-block {
+  margin-bottom: 16px;
+  padding: 16px 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.clone-section-header.light .title-block,
+.clone-section-header.light .subtitle-block {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.title-block h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  color: #DAC6B5;
+  margin-top: 8px;
+}
+
+.clone-section-header.light .title-block h2 {
+  color: #000;
+}
+
+.subtitle-block p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8px;
+}
+
+.clone-section-header.light .subtitle-block p {
+  color: #808080;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+.clone-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.clone-card {
+  padding: 36px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.clone-card-glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.card-spec {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.card-title,
+.card-text {
+  margin-bottom: 12px;
+}
+
+.card-title h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #DAC6B5;
+  margin-top: 4px;
+}
+
+.card-text p {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+}
+
+.clone-counters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.clone-counter {
+  text-align: center;
+  padding: 24px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.counter-num span {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #DAC6B5;
+}
+
+.counter-label span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.clone-valores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 48px;
+}
+
+.clone-valor {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 24px;
+  border-left: 3px solid #DAC6B5;
+  text-align: left;
+  position: relative;
+}
+
+.valor-spec {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+.valor-title strong {
+  font-family: 'Lato', sans-serif;
+  color: #DAC6B5;
+}
+
+.valor-desc span {
+  font-family: 'Lato', sans-serif;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===================================
+   QUEM SOMOS
+   =================================== */
+
+.clone-quem-somos {
+  padding: 100px 0;
+  position: relative;
+  background: #FFFFFF;
+}
+
+.clone-quem-somos .spec-annotation {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.clone-quem-somos .spec-font {
+  background: rgba(218, 198, 181, 0.5);
+  color: #8b7355;
+}
+
+.clone-quem-somos .spec-color {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.clone-quem-somos .spec-size,
+.clone-quem-somos .spec-extra {
+  background: rgba(0, 0, 0, 0.1);
+  color: #666;
+}
+
+.clone-team {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+}
+
+.clone-team-card {
+  background: #EDE3DA;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.team-card-bg {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.team-image {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gradient-label {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 12px;
+  border-radius: 4px;
+  word-break: break-all;
+  max-width: 200px;
+  text-align: center;
+}
+
+.team-content {
+  padding: 24px;
+}
+
+.team-name h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  color: #000;
+  margin-top: 4px;
+}
+
+.team-role {
+  margin: 12px 0;
+}
+
+.team-role span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #808080;
+}
+
+.team-quote p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* ===================================
+   ECOSSISTEMA
+   =================================== */
+
+.clone-ecossistema {
+  padding: 100px 0;
+  position: relative;
+  background: #EDE3DA;
+}
+
+.clone-ecossistema .spec-annotation {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.clone-ecossistema .spec-font {
+  background: rgba(218, 198, 181, 0.5);
+  color: #8b7355;
+}
+
+.clone-ecossistema .spec-color {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.clone-svg-area {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+}
+
+.svg-spec {
+  text-align: center;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 30px;
+}
+
+.svg-center-node {
+  width: 140px;
+  height: 140px;
+  background: #0A0A0A;
+  border: 2.5px solid #DAC6B5;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30px;
+  position: relative;
+  text-align: center;
+  padding: 16px;
+}
+
+.svg-center-node .node-spec {
+  position: absolute;
+  top: -40px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.svg-center-node span {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: white;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+.svg-lines-spec {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 16px;
+  background: rgba(218, 198, 181, 0.2);
+  border-radius: 8px;
+}
+
+.svg-lines-spec span {
+  font-family: 'Lato', sans-serif;
+  font-size: 12px;
+  color: #333;
+  margin-right: 8px;
+}
+
+.svg-lines-spec code {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 10px;
+  color: #666;
+}
+
+.svg-nodes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.svg-node {
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px;
+  text-align: center;
+}
+
+.svg-node .node-color-spec {
+  position: absolute;
+  top: -25px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 8px;
+  color: rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.svg-node span {
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+  margin-top: 8px;
+}
+
+.svg-node small {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+}
+
+/* ===================================
+   CONTATO
+   =================================== */
+
+.clone-contato {
+  padding: 100px 0;
+  position: relative;
+  background: #0A0A0A;
+  color: white;
+}
+
+.clone-contato-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.clone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.field-input {
+  position: relative;
+}
+
+.input-spec {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+.field-input input,
+.field-input select,
+.field-input textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: white;
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+}
+
+.field-input textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.clone-submit {
+  padding: 16px 24px;
+  background: #DAC6B5;
+  border-radius: 6px;
+  text-align: center;
+  position: relative;
+}
+
+.submit-spec {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 8px;
+}
+
+.clone-submit > span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.clone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-title h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: white;
+  margin-top: 4px;
+}
+
+.info-text p {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.info-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.info-links span {
+  font-family: 'Lato', sans-serif;
+  color: #DAC6B5;
+}
+
+.clone-quote {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  border-left: 3px solid #DAC6B5;
+  position: relative;
+}
+
+.quote-spec {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+.quote-text p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+}
+
+.quote-author span {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  color: #DAC6B5;
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+
+.clone-footer {
+  padding: 40px 0;
+  background: #000000;
+  position: relative;
+}
+
+.clone-footer-inner {
+  text-align: center;
+}
+
+.footer-logo {
+  margin-bottom: 16px;
+}
+
+.footer-logo span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: white;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.footer-link span:last-child {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-copy {
+  margin-top: 20px;
+}
+
+.footer-copy span {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===================================
+   DESIGN LEGEND SIDEBAR
+   =================================== */
+
+.design-legend {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  width: 260px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.design-legend h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: #DAC6B5;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-section {
+  margin-bottom: 24px;
+}
+
+.legend-section h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+}
+
+.legend-fonts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legend-font {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.font-demo {
+  font-size: 15px;
+  color: #fff;
+}
+
+.font-cinzel { font-family: 'Cinzel', serif; }
+.font-playfair { font-family: 'Playfair Display', serif; }
+.font-cormorant { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+.font-lato { font-family: 'Lato', sans-serif; }
+
+.font-usage {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.legend-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-color {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-chip {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.color-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.color-info strong {
+  font-family: 'Lato', sans-serif;
+  font-size: 12px;
+  color: #fff;
+}
+
+.color-info code {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.back-link {
+  display: block;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: #DAC6B5;
+  color: #000;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: background 0.2s;
+}
+
+.back-link:hover {
+  background: #c4a68f;
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
+@media (max-width: 1400px) {
+  .design-legend {
+    position: static;
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .clone-header-inner {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .clone-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .clone-contato-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .headline-lines span {
+    font-size: 20px;
+  }
+
+  .svg-nodes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .svg-node {
+    height: 100px;
+    width: 100px;
+  }
+}
