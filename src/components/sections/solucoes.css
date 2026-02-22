@@ -32,10 +32,22 @@
 }
 
 .solucoes__container {
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
   padding: 0 24px;
   text-align: center;
+}
+
+/* Grid: 1/5 + 3/5 + 1/5 */
+.solucoes__grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  width: 100%;
+  min-height: 600px;
+  align-items: center;
+}
+
+.solucoes__spacer {
+  /* Coluna vazia da direita */
 }
 
 /* ===================================
@@ -65,13 +77,6 @@
    =================================== */
 
 .solucoes__viz {
-  position: relative;
-  width: 60%;
-  margin-left: 20%;
-  margin-right: 20%;
-  min-height: 600px;
-  height: calc(100vh - 200px);
-  max-height: 800px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -308,24 +313,22 @@
    =================================== */
 
 .solucoes__details {
-  position: absolute;
-  left: 1vw;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18vw;
-  max-height: 350px;
+  /* Coluna 1 do grid (1/5 = 20%) */
   padding: 20px;
   background: var(--bg);
   border: 2px solid white;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   text-align: left;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 1000;
+  margin: 0 10px;
+  max-height: 400px;
+  align-self: center;
 }
 
 .solucoes__details--visible {

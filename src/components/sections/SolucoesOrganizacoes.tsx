@@ -260,22 +260,25 @@ export function SolucoesOrganizacoes() {
           </p>
         </div>
 
-        {/* Painel lateral esquerdo - aparece no hover */}
-        <div className={cn('solucoes__details', hoveredNodeData && 'solucoes__details--visible')}>
-          {hoveredNodeData ? (
-            <>
-              <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
-              <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
-            </>
-          ) : (
-            <p className="solucoes__details-placeholder">Passe o mouse sobre uma solução para ver detalhes.</p>
-          )}
-        </div>
+        {/* Grid: 1/5 painel | 3/5 diagrama | 1/5 vazio */}
+        <div className="solucoes__grid">
+          {/* Coluna 1: Painel (1/5) */}
+          <div className={cn('solucoes__details', hoveredNodeData && 'solucoes__details--visible')}>
+            {hoveredNodeData ? (
+              <>
+                <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
+                <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
+              </>
+            ) : (
+              <p className="solucoes__details-placeholder">Passe o mouse sobre uma solução para ver detalhes.</p>
+            )}
+          </div>
 
-        <div
-          ref={svgRef}
-          className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
-        >
+          {/* Coluna 2: Diagrama (3/5) */}
+          <div
+            ref={svgRef}
+            className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
+          >
           <svg
             id="solucoes-svg"
             className="solucoes__svg"
@@ -534,6 +537,9 @@ export function SolucoesOrganizacoes() {
             })}
           </svg>
         </div>
+        {/* Coluna 3: Vazio (1/5) */}
+        <div className="solucoes__spacer" />
+      </div>
       </div>
     </section>
   )
