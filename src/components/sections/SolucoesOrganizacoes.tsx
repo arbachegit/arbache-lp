@@ -279,9 +279,13 @@ export function SolucoesOrganizacoes() {
           <div className={cn('solucoes__details', hoveredNodeData && 'solucoes__details--visible')}>
             {hoveredNodeData ? (
               <>
-                <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
-                <span className="solucoes__details-icon">{hoveredNodeData.icon}</span>
-                <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
+                <div className="solucoes__details-header">
+                  <span className="solucoes__details-icon">{hoveredNodeData.icon}</span>
+                  <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
+                </div>
+                <div className="solucoes__details-body">
+                  <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
+                </div>
               </>
             ) : (
               <p className="solucoes__details-placeholder">Passe o mouse sobre uma solução para ver detalhes.</p>
