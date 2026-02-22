@@ -65,12 +65,12 @@
 
 .solucoes__viz {
   position: relative;
-  width: 100%;
-  max-width: 1400px;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
   min-height: 600px;
   height: calc(100vh - 200px);
   max-height: 800px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,7 +311,8 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 180px;
+  width: 20vw;
+  max-width: 280px;
   max-height: 350px;
   padding: 24px;
   background: var(--bg);
