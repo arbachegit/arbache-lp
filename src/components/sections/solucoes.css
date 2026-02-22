@@ -308,10 +308,10 @@
 
 .solucoes__details {
   position: fixed;
-  left: 24px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 280px;
+  width: 240px;
   max-height: 350px;
   padding: 24px;
   background: var(--bg);
