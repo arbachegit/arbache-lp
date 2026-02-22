@@ -327,7 +327,7 @@
   pointer-events: none;
   transition: opacity 0.3s ease;
   margin: 0 10px 0 50px;
-  max-height: 400px;
+  max-height: 440px;
   align-self: center;
 }
 
