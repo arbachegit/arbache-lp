@@ -311,7 +311,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 220px;
+  width: 180px;
   max-height: 350px;
   padding: 24px;
   background: var(--bg);
