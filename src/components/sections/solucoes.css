@@ -309,55 +309,76 @@
 }
 
 /* ===================================
-   9. DETAILS PANEL (LEFT SIDE - FLEX ITEM)
+   9. PANEL DE EXPLICAÇÃO (LEFT SIDE)
+   Max-height: 800px com header + ícone + texto
    =================================== */
 
-.solucoes__details {
-  /* Coluna 1 do grid (1/5 = 20%) */
-  padding: 20px;
+.solucoes__panel {
+  padding: 24px;
   background: var(--bg);
   border: 2px solid white;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   text-align: left;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   margin: 0 10px 0 50px;
-  max-height: 500px;
+  max-height: 800px;
   align-self: center;
   transform: translateY(-40px);
 }
 
-.solucoes__details--visible {
+.solucoes__panel--visible {
   opacity: 1;
 }
 
-.solucoes__details-title {
+/* Header do painel: título + ícone abaixo */
+.solucoes__panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.solucoes__panel-title {
   font-family: 'Lato', sans-serif;
-  font-size: clamp(20px, 1.6vw, 28px);
+  font-size: clamp(18px, 1.5vw, 24px);
   font-weight: 700;
   color: white;
-  margin-bottom: 16px;
   line-height: 1.2;
+  margin: 0;
 }
 
-.solucoes__details-desc {
+.solucoes__panel-icon {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--ring1);
+}
+
+/* Body do painel */
+.solucoes__panel-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.solucoes__panel-details {
   font-family: 'Lato', sans-serif;
-  font-size: clamp(16px, 1.2vw, 20px);
+  font-size: clamp(14px, 1.1vw, 17px);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  line-height: 1.65;
   margin: 0;
-  flex: 1;
 }
 
-.solucoes__details-placeholder {
+.solucoes__panel-placeholder {
   font-family: 'Lato', sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--muted);
   font-style: italic;
   margin: auto 0;
@@ -385,7 +406,7 @@
     transition-duration: 0.1s;
   }
 
-  .solucoes__details {
+  .solucoes__panel {
     transition-duration: 0.1s;
   }
 }
@@ -393,6 +414,28 @@
 /* ===================================
    11. RESPONSIVE
    =================================== */
+
+@media (max-width: 1024px) {
+  .solucoes__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .solucoes__panel {
+    margin: 0 auto;
+    max-width: 500px;
+    transform: none;
+    order: 2;
+  }
+
+  .solucoes__viz {
+    order: 1;
+  }
+
+  .solucoes__spacer {
+    display: none;
+  }
+}
 
 @media (max-width: 768px) {
   .solucoes {
@@ -419,7 +462,7 @@
     min-height: 420px;
   }
 
-  .solucoes__details {
+  .solucoes__panel {
     display: none;
   }
 }

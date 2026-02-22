@@ -33,7 +33,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Educação e Educação Corporativa',
     description: 'Programas de desenvolvimento e educação corporativa personalizados para líderes e equipes.',
     label: ['Educação e', 'Ed. Corporativa'],
-    icon: '📚',
+    icon: '▣',
     details: 'Desenvolvemos programas educacionais sob medida que transformam conhecimento em resultados tangíveis. Nossa metodologia combina teoria fundamentada com aplicação prática, utilizando cases reais e dinâmicas imersivas. Criamos trilhas de aprendizagem personalizadas, universidades corporativas e programas de capacitação que elevam competências técnicas e comportamentais, preparando profissionais para os desafios do mercado atual.'
   },
   'node-02': {
@@ -41,7 +41,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Liderança e Gestão de Equipes',
     description: 'Desenvolvimento de lideranças inovadoras e gestão de alta performance.',
     label: ['Liderança e', 'Gestão de Equipes'],
-    icon: '👥',
+    icon: '◈',
     details: 'Formamos líderes preparados para navegar em ambientes complexos e voláteis. Nossos programas desenvolvem competências essenciais como inteligência emocional, pensamento estratégico, comunicação assertiva e gestão de conflitos. Trabalhamos a liderança situacional, inclusiva e sustentável, capacitando gestores a construir equipes engajadas, promover culturas de alta performance e conduzir transformações organizacionais com propósito e resultados.'
   },
   'node-03': {
@@ -49,7 +49,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Gestão de Carreira e Posicionamento',
     description: 'Mentoria e estratégias para desenvolvimento de carreira e posicionamento profissional.',
     label: ['Gestão de Carreira', 'e Posicionamento'],
-    icon: '🎯',
+    icon: '▲',
     details: 'Oferecemos mentoria estratégica para profissionais que buscam acelerar sua trajetória e alcançar posições de destaque. Trabalhamos o autoconhecimento, mapeamento de competências, definição de metas e construção de marca pessoal. Nosso acompanhamento inclui preparação para transições de carreira, desenvolvimento de networking qualificado e posicionamento no mercado, sempre alinhando propósito pessoal com oportunidades profissionais.'
   },
   'node-04': {
@@ -57,7 +57,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Recursos Humanos e Gestão de Pessoas',
     description: 'Soluções estratégicas para RH e desenvolvimento organizacional.',
     label: ['Recursos Humanos', 'e Gestão de Pessoas'],
-    icon: '⚙️',
+    icon: '⚙',
     details: 'Estruturamos processos de RH modernos e humanizados que atraem, desenvolvem e retêm talentos. Atuamos na criação de políticas de gestão de pessoas, programas de onboarding, avaliação de desempenho, clima organizacional e planos de sucessão. Nossa abordagem integra práticas inovadoras com a cultura organizacional, transformando o RH em parceiro estratégico do negócio e impulsionador de resultados sustentáveis.'
   },
   'node-05': {
@@ -65,7 +65,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Inovação, Tecnologia e IA',
     description: 'Integração de tecnologia e inteligência artificial nos processos de aprendizagem.',
     label: ['Inovação,', 'Tecnologia e IA'],
-    icon: '🤖',
+    icon: '◉',
     details: 'Integramos inovação tecnológica e inteligência artificial como aceleradores de desenvolvimento humano e organizacional. Desenvolvemos soluções que utilizam IA para personalização de aprendizagem, assessment de competências e análise preditiva de talentos. Nossa expertise combina o melhor da tecnologia com metodologias humanizadas, preparando organizações para a transformação digital sem perder o foco nas pessoas.'
   },
   'node-06': {
@@ -73,7 +73,7 @@ const nodesData: Record<string, NodeData> = {
     title: 'Sustentabilidade e ESG',
     description: 'Estratégias de ESG e práticas sustentáveis para negócios conscientes.',
     label: ['Sustentabilidade', 'e ESG'],
-    icon: '🌱',
+    icon: '⬡',
     details: 'Orientamos organizações na jornada de integração ESG ao core business. Desenvolvemos estratégias de sustentabilidade que geram valor compartilhado para stakeholders e sociedade. Nossa consultoria abrange diagnóstico de maturidade ESG, definição de metas e indicadores, relatórios de sustentabilidade e formação de lideranças conscientes. Transformamos compromissos ambientais, sociais e de governança em vantagem competitiva e legado positivo.'
   }
 }
