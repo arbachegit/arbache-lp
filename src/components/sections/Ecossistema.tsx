@@ -26,7 +26,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Núcleo central do ecossistema, integrando todas as competências e conexões para entregar soluções transformadoras.',
     label: ['ARBACHE', 'CONSULTING'],
     icon: '◆',
-    details: 'A Arbache Consulting é o centro gravitacional que conecta e potencializa todas as áreas de atuação. Com mais de duas décadas de experiência, integramos educação, liderança, tecnologia e sustentabilidade em um ecossistema coeso que gera valor sustentável para organizações e profissionais.'
+    details: 'Centro que conecta e potencializa todas as áreas de atuação. Integramos educação, liderança, tecnologia e sustentabilidade em um ecossistema coeso que gera valor para organizações e profissionais.'
   },
   'node-01': {
     id: 'node-01',
@@ -34,7 +34,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Programas de desenvolvimento e educação corporativa personalizados para líderes e equipes.',
     label: ['Educação e', 'Ed. Corporativa'],
     icon: '▣',
-    details: 'Desenvolvemos programas educacionais sob medida que transformam conhecimento em resultados tangíveis. Nossa metodologia combina teoria fundamentada com aplicação prática, utilizando cases reais e dinâmicas imersivas. Criamos trilhas de aprendizagem personalizadas, universidades corporativas e programas de capacitação que elevam competências técnicas e comportamentais, preparando profissionais para os desafios do mercado atual.'
+    details: 'Programas educacionais sob medida que transformam conhecimento em resultados. Metodologia que combina teoria com aplicação prática, cases reais e dinâmicas imersivas para elevar competências técnicas e comportamentais.'
   },
   'node-02': {
     id: 'node-02',
@@ -42,7 +42,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Desenvolvimento de lideranças inovadoras e gestão de alta performance.',
     label: ['Liderança e', 'Gestão de Equipes'],
     icon: '◈',
-    details: 'Formamos líderes preparados para navegar em ambientes complexos e voláteis. Nossos programas desenvolvem competências essenciais como inteligência emocional, pensamento estratégico, comunicação assertiva e gestão de conflitos. Trabalhamos a liderança situacional, inclusiva e sustentável, capacitando gestores a construir equipes engajadas, promover culturas de alta performance e conduzir transformações organizacionais com propósito e resultados.'
+    details: 'Formação de líderes para ambientes complexos. Desenvolvemos inteligência emocional, pensamento estratégico e comunicação assertiva para construir equipes engajadas e culturas de alta performance.'
   },
   'node-03': {
     id: 'node-03',
@@ -50,7 +50,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Mentoria e estratégias para desenvolvimento de carreira e posicionamento profissional.',
     label: ['Gestão de Carreira', 'e Posicionamento'],
     icon: '▲',
-    details: 'Oferecemos mentoria estratégica para profissionais que buscam acelerar sua trajetória e alcançar posições de destaque. Trabalhamos o autoconhecimento, mapeamento de competências, definição de metas e construção de marca pessoal. Nosso acompanhamento inclui preparação para transições de carreira, desenvolvimento de networking qualificado e posicionamento no mercado, sempre alinhando propósito pessoal com oportunidades profissionais.'
+    details: 'Mentoria estratégica para acelerar trajetórias profissionais. Trabalhamos autoconhecimento, mapeamento de competências, marca pessoal e networking qualificado alinhando propósito com oportunidades.'
   },
   'node-04': {
     id: 'node-04',
@@ -58,7 +58,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Soluções estratégicas para RH e desenvolvimento organizacional.',
     label: ['Recursos Humanos', 'e Gestão de Pessoas'],
     icon: '⚙',
-    details: 'Estruturamos processos de RH modernos e humanizados que atraem, desenvolvem e retêm talentos. Atuamos na criação de políticas de gestão de pessoas, programas de onboarding, avaliação de desempenho, clima organizacional e planos de sucessão. Nossa abordagem integra práticas inovadoras com a cultura organizacional, transformando o RH em parceiro estratégico do negócio e impulsionador de resultados sustentáveis.'
+    details: 'Processos de RH modernos e humanizados para atrair, desenvolver e reter talentos. Políticas de gestão, onboarding, avaliação de desempenho e planos de sucessão integrados à cultura organizacional.'
   },
   'node-05': {
     id: 'node-05',
@@ -66,7 +66,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Integração de tecnologia e inteligência artificial nos processos de aprendizagem.',
     label: ['Inovação,', 'Tecnologia e IA'],
     icon: '◉',
-    details: 'Integramos inovação tecnológica e inteligência artificial como aceleradores de desenvolvimento humano e organizacional. Desenvolvemos soluções que utilizam IA para personalização de aprendizagem, assessment de competências e análise preditiva de talentos. Nossa expertise combina o melhor da tecnologia com metodologias humanizadas, preparando organizações para a transformação digital sem perder o foco nas pessoas.'
+    details: 'Inovação tecnológica e IA como aceleradores de desenvolvimento. Soluções para personalização de aprendizagem, assessment de competências e análise preditiva de talentos com foco nas pessoas.'
   },
   'node-06': {
     id: 'node-06',
@@ -74,7 +74,7 @@ const nodesData: Record<string, NodeData> = {
     description: 'Estratégias de ESG e práticas sustentáveis para negócios conscientes.',
     label: ['Sustentabilidade', 'e ESG'],
     icon: '⬡',
-    details: 'Orientamos organizações na jornada de integração ESG ao core business. Desenvolvemos estratégias de sustentabilidade que geram valor compartilhado para stakeholders e sociedade. Nossa consultoria abrange diagnóstico de maturidade ESG, definição de metas e indicadores, relatórios de sustentabilidade e formação de lideranças conscientes. Transformamos compromissos ambientais, sociais e de governança em vantagem competitiva e legado positivo.'
+    details: 'Integração ESG ao core business com estratégias que geram valor para stakeholders e sociedade. Diagnóstico, metas, indicadores e formação de lideranças conscientes para vantagem competitiva.'
   }
 }
 
