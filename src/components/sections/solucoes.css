@@ -307,12 +307,12 @@
    =================================== */
 
 .solucoes__details {
-  position: absolute;
-  left: 0;
+  position: fixed;
+  left: 24px;
   top: 50%;
   transform: translateY(-50%);
-  width: 320px;
-  height: 380px;
+  width: 280px;
+  max-height: 350px;
   padding: 24px;
   background: var(--bg);
   border: 2px solid white;
@@ -324,12 +324,11 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 50;
+  z-index: 1000;
 }
 
 .solucoes__details--visible {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .solucoes__details-title {
