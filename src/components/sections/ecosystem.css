@@ -1,0 +1,386 @@
+/* ===================================
+   ECOSYSTEM SECTION - SVG INTERATIVO
+   Tokens e classes determinísticos
+   =================================== */
+
+/* ===================================
+   1. DESIGN TOKENS (valores fixos)
+   =================================== */
+
+.ecosystem {
+  --bg: #0B0B0C;
+  --panel: #111114;
+  --text: #F2F2F2;
+  --muted: #B9B9B9;
+  --line: #2A2A2E;
+  --ring0: #2A2A2E;
+  --ring1: #E6E6E6;
+  --dotHex: #A0A0A0;
+}
+
+/* ===================================
+   2. SECTION CONTAINER
+   =================================== */
+
+.ecosystem {
+  background: var(--bg);
+  padding: 100px 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.ecosystem__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+/* ===================================
+   3. TYPOGRAPHY
+   =================================== */
+
+.ecosystem__title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+
+.ecosystem__subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--muted);
+  max-width: 650px;
+  margin: 0 auto 60px;
+  line-height: 1.6;
+}
+
+/* ===================================
+   4. SVG CONTAINER
+   =================================== */
+
+.ecosystem__viz {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.ecosystem__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===================================
+   5. CONNECTION LINES
+   =================================== */
+
+.ecosystem__link {
+  stroke: var(--line);
+  stroke-width: 2;
+  opacity: 0.9;
+  stroke-dasharray: 6 4;
+  animation: ecosystem-dash-flow 3s linear infinite;
+}
+
+@keyframes ecosystem-dash-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* ===================================
+   6. HUB (CENTER NODE)
+   =================================== */
+
+.ecosystem__hub {
+  cursor: pointer;
+  outline: none;
+}
+
+.ecosystem__hub--pulse {
+  animation: ecosystem-hub-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes ecosystem-hub-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.node__base--hub {
+  fill: var(--bg);
+  stroke: var(--ring1);
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.node__ring {
+  stroke: var(--line);
+  opacity: 0.5;
+}
+
+.node__label--hub-main {
+  fill: var(--text);
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+.node__label--hub-sub {
+  fill: var(--muted);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+/* Hub hover/active states */
+.ecosystem__hub:hover .node__base--hub,
+.ecosystem__hub:focus .node__base--hub,
+.ecosystem__hub.ecosystem__node--active .node__base--hub {
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.ecosystem__hub:focus-visible .node__base--hub {
+  filter: url(#glowFilter);
+}
+
+/* ===================================
+   7. ORBITAL NODES
+   =================================== */
+
+.ecosystem__node {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Base state */
+.ecosystem__node--active:not(.ecosystem__hub) {
+  transform: scale(1.15);
+}
+
+.ecosystem__node--selected:not(.ecosystem__hub) {
+  transform: scale(1.18);
+}
+
+/* Node base circle */
+.node__base {
+  fill: rgba(255, 255, 255, 0.02);
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-opacity: 0.55;
+  transition: all 0.3s ease;
+}
+
+.ecosystem__node--active .node__base,
+.ecosystem__node:hover .node__base,
+.ecosystem__node:focus .node__base {
+  stroke: var(--text);
+  stroke-opacity: 0.75;
+  stroke-width: 2.5;
+}
+
+.ecosystem__node:focus-visible .node__base {
+  filter: url(#glowFilter);
+}
+
+/* Node label */
+.node__label {
+  fill: var(--text);
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* ===================================
+   8. ARC LOADER
+   =================================== */
+
+.node__arc {
+  stroke: url(#arcGradient);
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.node__arc--animated {
+  animation: ecosystem-arc-rotate 8s linear infinite;
+}
+
+.ecosystem__node--active .node__arc {
+  opacity: 0.7;
+  animation-duration: 3s;
+}
+
+@keyframes ecosystem-arc-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dot */
+.node__dot {
+  fill: var(--dotHex);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.ecosystem__node--active .node__dot {
+  opacity: 1;
+}
+
+/* ===================================
+   9. DETAILS PANEL
+   =================================== */
+
+.ecosystem__details {
+  max-width: 600px;
+  margin: 40px auto 0;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  pointer-events: none;
+  min-height: 60px;
+}
+
+.ecosystem__details--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  padding: 32px;
+}
+
+.ecosystem__details-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.ecosystem__details-desc {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.ecosystem__details-placeholder {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.ecosystem__details-close {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ecosystem__details-close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border-color: var(--ring1);
+}
+
+/* ===================================
+   10. REDUCED MOTION
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .ecosystem__hub--pulse {
+    animation: none;
+  }
+
+  .node__arc--animated {
+    animation: none;
+  }
+
+  .ecosystem__link {
+    animation: none;
+  }
+
+  .ecosystem__node {
+    transition-duration: 0.1s;
+  }
+
+  .ecosystem__details {
+    transition-duration: 0.1s;
+  }
+}
+
+/* ===================================
+   11. RESPONSIVE
+   =================================== */
+
+@media (max-width: 768px) {
+  .ecosystem {
+    padding: 60px 0;
+  }
+
+  .ecosystem__subtitle {
+    margin-bottom: 40px;
+  }
+
+  .ecosystem__viz {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+  }
+
+  .ecosystem__svg {
+    min-width: 700px;
+    transform: scale(0.92);
+    transform-origin: top center;
+  }
+
+  .ecosystem__details--visible {
+    padding: 24px;
+  }
+
+  .ecosystem__details-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ecosystem__title {
+    font-size: 1.5rem;
+  }
+
+  .ecosystem__subtitle {
+    font-size: 1rem;
+  }
+
+  .ecosystem__svg {
+    min-width: 600px;
+  }
+}

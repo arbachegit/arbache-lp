@@ -1,19 +1,145 @@
 'use client'
 
+import { useState, useCallback, useEffect } from 'react'
 import { useReveal } from '@/hooks/useReveal'
 import { cn } from '@/lib/utils'
+import './ecosystem.css'
+
+// ===================================
+// NODE DATA (6 orbital nodes + hub)
+// ===================================
+
+interface NodeData {
+  id: string
+  title: string
+  description: string
+  label: string[]
+}
+
+const nodesData: Record<string, NodeData> = {
+  'hub': {
+    id: 'hub',
+    title: 'Arbache Consulting',
+    description: 'Núcleo central do ecossistema, integrando todas as competências e conexões para entregar soluções transformadoras.',
+    label: ['ARBACHE', 'CONSULTING']
+  },
+  'node-01': {
+    id: 'node-01',
+    title: 'Educação e Educação Corporativa',
+    description: 'Programas de desenvolvimento e educação corporativa personalizados para líderes e equipes.',
+    label: ['Educação e', 'Ed. Corporativa']
+  },
+  'node-02': {
+    id: 'node-02',
+    title: 'Liderança e Gestão de Equipes',
+    description: 'Desenvolvimento de lideranças inovadoras e gestão de alta performance.',
+    label: ['Liderança e', 'Gestão de Equipes']
+  },
+  'node-03': {
+    id: 'node-03',
+    title: 'Gestão de Carreira e Posicionamento',
+    description: 'Mentoria e estratégias para desenvolvimento de carreira e posicionamento profissional.',
+    label: ['Gestão de Carreira', 'e Posicionamento']
+  },
+  'node-04': {
+    id: 'node-04',
+    title: 'Recursos Humanos e Gestão de Pessoas',
+    description: 'Soluções estratégicas para RH e desenvolvimento organizacional.',
+    label: ['Recursos Humanos', 'e Gestão de Pessoas']
+  },
+  'node-05': {
+    id: 'node-05',
+    title: 'Inovação, Tecnologia e IA',
+    description: 'Integração de tecnologia e inteligência artificial nos processos de aprendizagem.',
+    label: ['Inovação,', 'Tecnologia e IA']
+  },
+  'node-06': {
+    id: 'node-06',
+    title: 'Sustentabilidade e ESG',
+    description: 'Estratégias de ESG e práticas sustentáveis para negócios conscientes.',
+    label: ['Sustentabilidade', 'e ESG']
+  }
+}
+
+// ===================================
+// GEOMETRY (deterministic positions)
+// ===================================
+
+const HUB = { cx: 500, cy: 300, r: 78 }
+
+const orbitalNodes = [
+  { id: 'node-01', cx: 500, cy: 90,  r: 54 },
+  { id: 'node-02', cx: 700, cy: 150, r: 54 },
+  { id: 'node-03', cx: 820, cy: 300, r: 54 },
+  { id: 'node-04', cx: 700, cy: 450, r: 54 },
+  { id: 'node-05', cx: 500, cy: 510, r: 54 },
+  { id: 'node-06', cx: 300, cy: 450, r: 54 },
+]
+
+// ===================================
+// HELPER: Calculate shortened line endpoint
+// ===================================
+
+function getShortenedLineEnd(
+  x1: number, y1: number,
+  x2: number, y2: number,
+  shortenBy: number
+): { x: number; y: number } {
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const length = Math.sqrt(dx * dx + dy * dy)
+  const ratio = (length - shortenBy) / length
+  return {
+    x: x1 + dx * ratio,
+    y: y1 + dy * ratio
+  }
+}
+
+// ===================================
+// COMPONENT
+// ===================================
 
 export function Ecossistema() {
   const { ref: titleRef, isVisible: titleVisible } = useReveal<HTMLDivElement>()
   const { ref: svgRef, isVisible: svgVisible } = useReveal<HTMLDivElement>()
+  const [selectedNode, setSelectedNode] = useState<string | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mediaQuery.matches)
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+
+  const handleNodeClick = useCallback((id: string) => {
+    setSelectedNode(prev => prev === id ? null : id)
+  }, [])
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleNodeClick(id)
+    }
+  }, [handleNodeClick])
+
+  const getNodeState = (id: string) => {
+    const isSelected = selectedNode === id
+    const isHovered = hoveredNode === id
+    return { isSelected, isHovered, isActive: isSelected || isHovered }
+  }
+
+  const selectedNodeData = selectedNode ? nodesData[selectedNode] : null
 
   return (
-    <section id="ecossistema" className="py-[100px] bg-[#EDE3DA]">
-      <div className="max-w-[1200px] mx-auto px-6 text-center">
+    <section id="nosso-ecossistema" className="ecosystem">
+      <div className="ecosystem__container">
         <div ref={titleRef}>
           <h2
             className={cn(
-              'font-section text-[clamp(1.8rem,3.5vw,2.8rem)] mb-4 reveal',
+              'ecosystem__title reveal',
               titleVisible && 'visible'
             )}
           >
@@ -21,7 +147,7 @@ export function Ecossistema() {
           </h2>
           <p
             className={cn(
-              'font-tagline text-[clamp(1rem,2vw,1.25rem)] text-[#808080] max-w-[650px] mx-auto mb-[60px] reveal reveal-delay-1',
+              'ecosystem__subtitle reveal reveal-delay-1',
               titleVisible && 'visible'
             )}
           >
@@ -31,152 +157,223 @@ export function Ecossistema() {
 
         <div
           ref={svgRef}
-          className={cn('max-w-[900px] mx-auto reveal reveal-delay-2', svgVisible && 'visible')}
+          className={cn('ecosystem__viz reveal reveal-delay-2', svgVisible && 'visible')}
         >
-          <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
-            {/* Connection lines */}
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="400" y2="100" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="160" y2="160" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="640" y2="160" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="100" y2="340" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="700" y2="340" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="220" y2="500" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="400" y2="510" />
-            <line className="eco-line eco-line-anim" x1="400" y1="300" x2="580" y2="500" />
+          <svg
+            id="ecosystem-svg"
+            className="ecosystem__svg"
+            viewBox="0 0 1000 600"
+            preserveAspectRatio="xMidYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Visualização do Nosso Ecossistema"
+          >
+            <defs>
+              {/* Arc Loader Gradient using --ring0 and --ring1 */}
+              <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="var(--ring0)" />
+                <stop offset="100%" stopColor="var(--ring1)" />
+              </linearGradient>
 
-            {/* Center node */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="400" cy="300" r="55" fill="#0A0A0A" stroke="#DAC6B5" strokeWidth="2.5">
-                <animate attributeName="r" values="55;58;55" dur="3s" repeatCount="indefinite" />
-              </circle>
+              {/* Glow filter for focus states */}
+              <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Connection Lines Group */}
+            <g id="ecosystem-links" className="ecosystem__links">
+              {orbitalNodes.map((node) => {
+                const end = getShortenedLineEnd(HUB.cx, HUB.cy, node.cx, node.cy, 40)
+                return (
+                  <line
+                    key={`link-${node.id}`}
+                    className="ecosystem__link"
+                    x1={HUB.cx}
+                    y1={HUB.cy}
+                    x2={end.x}
+                    y2={end.y}
+                  />
+                )
+              })}
+            </g>
+
+            {/* Hub (Center) */}
+            <g
+              id="node-hub"
+              className={cn(
+                'ecosystem__node ecosystem__hub',
+                !reducedMotion && 'ecosystem__hub--pulse',
+                getNodeState('hub').isActive && 'ecosystem__node--active',
+                getNodeState('hub').isSelected && 'ecosystem__node--selected'
+              )}
+              data-node-id="hub"
+              tabIndex={0}
+              role="button"
+              aria-label="Núcleo do ecossistema"
+              aria-pressed={selectedNode === 'hub'}
+              onClick={() => handleNodeClick('hub')}
+              onKeyDown={(e) => handleKeyDown(e, 'hub')}
+              onMouseEnter={() => setHoveredNode('hub')}
+              onMouseLeave={() => setHoveredNode(null)}
+              onFocus={() => setHoveredNode('hub')}
+              onBlur={() => setHoveredNode(null)}
+              style={{ transformOrigin: `${HUB.cx}px ${HUB.cy}px` }}
+            >
+              {/* Hub base circle */}
+              <circle
+                className="node__base node__base--hub"
+                cx={HUB.cx}
+                cy={HUB.cy}
+                r={HUB.r}
+              />
+              {/* Hub outer ring */}
+              <circle
+                className="node__ring"
+                cx={HUB.cx}
+                cy={HUB.cy}
+                r={HUB.r + 10}
+                fill="none"
+                strokeWidth="2"
+              />
+              {/* Hub label */}
               <text
-                className="fill-white text-center text-[13px] font-[Cinzel] font-semibold tracking-[1px]"
-                x="400"
-                y="296"
+                className="node__label node__label--hub-main"
+                x={HUB.cx}
+                y={HUB.cy - 8}
                 textAnchor="middle"
+                dominantBaseline="middle"
               >
                 ARBACHE
               </text>
               <text
-                className="fill-white text-center text-[10px] font-[Cinzel] font-semibold tracking-[1px] opacity-70"
-                x="400"
-                y="312"
+                className="node__label node__label--hub-sub"
+                x={HUB.cx}
+                y={HUB.cy + 14}
                 textAnchor="middle"
+                dominantBaseline="middle"
               >
                 CONSULTING
               </text>
             </g>
 
-            {/* Educação */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="400" cy="100" r="48" fill="#3B82F6" opacity="0.85" stroke="#2563EB" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="400" y="96" textAnchor="middle">
-                Educação e
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="400" y="110" textAnchor="middle">
-                Ed. Corporativa
-              </text>
-            </g>
+            {/* Orbital Nodes */}
+            {orbitalNodes.map((node) => {
+              const { isActive, isSelected } = getNodeState(node.id)
+              const data = nodesData[node.id]
+              const arcRadius = node.r + 14
+              const animDuration = isActive ? '1.4s' : '2.8s'
 
-            {/* Sustentabilidade */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="160" cy="160" r="48" fill="#2D6A4F" opacity="0.85" stroke="#1B4332" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="4.5s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="160" y="156" textAnchor="middle">
-                Sustentabilidade
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="160" y="170" textAnchor="middle">
-                e ESG
-              </text>
-            </g>
+              return (
+                <g
+                  key={node.id}
+                  id={node.id}
+                  className={cn(
+                    'ecosystem__node',
+                    isActive && 'ecosystem__node--active',
+                    isSelected && 'ecosystem__node--selected'
+                  )}
+                  data-node-id={node.id}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={data.title}
+                  aria-pressed={isSelected}
+                  onClick={() => handleNodeClick(node.id)}
+                  onKeyDown={(e) => handleKeyDown(e, node.id)}
+                  onMouseEnter={() => setHoveredNode(node.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                  onFocus={() => setHoveredNode(node.id)}
+                  onBlur={() => setHoveredNode(null)}
+                  style={{ transformOrigin: `${node.cx}px ${node.cy}px` }}
+                >
+                  {/* Node base circle */}
+                  <circle
+                    className="node__base"
+                    cx={node.cx}
+                    cy={node.cy}
+                    r={node.r}
+                  />
 
-            {/* Liderança */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="640" cy="160" r="48" fill="#DC2626" opacity="0.85" stroke="#991B1B" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="3.5s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="640" y="152" textAnchor="middle">
-                Liderança e
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="640" y="164" textAnchor="middle">
-                Gestão de Equipes
-              </text>
-              <text className="fill-white text-center text-[9px] font-[Lato]" x="640" y="176" textAnchor="middle">
-                Liderança Inovadora
-              </text>
-            </g>
+                  {/* Arc loader ring */}
+                  <circle
+                    className={cn(
+                      'node__arc',
+                      !reducedMotion && 'node__arc--animated'
+                    )}
+                    cx={node.cx}
+                    cy={node.cy}
+                    r={arcRadius}
+                    fill="none"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray="90 999"
+                    style={{ transformOrigin: `${node.cx}px ${node.cy}px` }}
+                  />
 
-            {/* Inovação */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="100" cy="340" r="48" fill="#9333EA" opacity="0.85" stroke="#6B21A8" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="5s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="100" y="336" textAnchor="middle">
-                Inovação
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="100" y="350" textAnchor="middle">
-                Tecnologia e IA
-              </text>
-            </g>
+                  {/* Dot with animateMotion */}
+                  <circle className="node__dot" r="4" fill="var(--dotHex)">
+                    {!reducedMotion && (
+                      <animateMotion
+                        dur={animDuration}
+                        repeatCount="indefinite"
+                        path={`M ${node.cx} ${node.cy - arcRadius} A ${arcRadius} ${arcRadius} 0 1 1 ${node.cx - 0.001} ${node.cy - arcRadius}`}
+                      />
+                    )}
+                  </circle>
 
-            {/* Gestão de Carreira */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="700" cy="340" r="48" fill="#EAB308" opacity="0.85" stroke="#A16207" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="4.2s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-black text-center text-[11px] font-[Lato] font-bold" x="700" y="330" textAnchor="middle">
-                Gestão de Carreira
-              </text>
-              <text className="fill-black text-center text-[11px] font-[Lato]" x="700" y="343" textAnchor="middle">
-                Carreira da Mulher
-              </text>
-              <text className="fill-black text-center text-[9px] font-[Lato]" x="700" y="356" textAnchor="middle">
-                e Posicionamento
-              </text>
-            </g>
-
-            {/* Experiências */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="220" cy="500" r="48" fill="#F97316" opacity="0.85" stroke="#C2410C" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="4.8s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="220" y="496" textAnchor="middle">
-                Experiências e
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="220" y="510" textAnchor="middle">
-                Missões Interculturais
-              </text>
-            </g>
-
-            {/* Voluntariado */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="400" cy="510" r="42" fill="#22C55E" opacity="0.85" stroke="#15803D" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="3.8s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="400" y="506" textAnchor="middle">
-                Voluntariado
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="400" y="520" textAnchor="middle">
-                Redes e Comunidades
-              </text>
-            </g>
-
-            {/* RH */}
-            <g className="cursor-pointer transition-transform duration-300 hover:scale-[1.08]">
-              <circle cx="580" cy="500" r="48" fill="#3B82F6" opacity="0.85" stroke="#1D4ED8" strokeWidth="1.5">
-                <animate attributeName="opacity" values="0.85;1;0.85" dur="4.3s" repeatCount="indefinite" />
-              </circle>
-              <text className="fill-white text-center text-[11px] font-[Lato] font-bold" x="580" y="496" textAnchor="middle">
-                Recursos Humanos
-              </text>
-              <text className="fill-white text-center text-[11px] font-[Lato]" x="580" y="510" textAnchor="middle">
-                e Gestão de Pessoas
-              </text>
-            </g>
+                  {/* Node labels */}
+                  {data.label.map((line, i) => (
+                    <text
+                      key={i}
+                      className="node__label"
+                      x={node.cx}
+                      y={node.cy + (i - (data.label.length - 1) / 2) * 16}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      {line}
+                    </text>
+                  ))}
+                </g>
+              )
+            })}
           </svg>
+        </div>
+
+        {/* Details Panel */}
+        <div
+          id="ecosystem-details"
+          className={cn(
+            'ecosystem__details',
+            selectedNodeData && 'ecosystem__details--visible'
+          )}
+          aria-live="polite"
+        >
+          {selectedNodeData ? (
+            <>
+              <h3 className="ecosystem__details-title">
+                {selectedNodeData.title}
+              </h3>
+              <p className="ecosystem__details-desc">
+                {selectedNodeData.description}
+              </p>
+              <button
+                className="ecosystem__details-close"
+                onClick={() => setSelectedNode(null)}
+                aria-label="Fechar detalhes"
+              >
+                Fechar
+              </button>
+            </>
+          ) : (
+            <p className="ecosystem__details-placeholder">
+              Selecione um item do ecossistema para ver detalhes.
+            </p>
+          )}
         </div>
       </div>
     </section>
