@@ -1,60 +1,128 @@
 /**
  * MCP Server - Perplexity
  * Servidor MCP para busca de informações via Perplexity AI
+ *
+ * MCP Guardrails Applied:
+ * - Zod input validation (versioned schemas)
+ * - Network allowlist
+ * - Timeout + Retry + Backoff
+ * - Structured logging with request_id
+ * - Output validation
+ * - No direct process.env access
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js'
+} from '@modelcontextprotocol/sdk/types.js';
 
-const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY
+import {
+  secureFetch,
+  secureLog,
+  generateRequestId,
+  SearchInputV1,
+  TextOutputV1,
+} from '../lib/guardrails.js';
+
+// ===================================
+// CONFIG (não acessa process.env diretamente no runtime)
+// ===================================
+
+class PerplexityConfig {
+  private static apiKey: string | undefined;
+  private static initialized = false;
+
+  static initialize(): void {
+    if (this.initialized) return;
+    this.apiKey = process.env.PERPLEXITY_API_KEY;
+    this.initialized = true;
+  }
+
+  static hasApiKey(): boolean {
+    return Boolean(this.apiKey);
+  }
+
+  static getHeaders(): Record<string, string> {
+    if (!this.apiKey) {
+      throw new Error('PERPLEXITY_API_KEY not configured');
+    }
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+    };
+  }
+}
+
+// Initialize on load
+PerplexityConfig.initialize();
+
+// ===================================
+// PERPLEXITY API
+// ===================================
 
 interface PerplexityResponse {
   choices: Array<{
     message: {
-      content: string
-    }
-  }>
+      content: string;
+    };
+  }>;
+  usage?: {
+    total_tokens: number;
+  };
 }
 
-async function searchPerplexity(query: string, context?: string): Promise<string> {
-  if (!PERPLEXITY_API_KEY) {
-    throw new Error('PERPLEXITY_API_KEY not configured')
+async function searchPerplexity(
+  query: string,
+  context: string | undefined,
+  requestId: string
+): Promise<{ text: string; tokens_used?: number }> {
+  if (!PerplexityConfig.hasApiKey()) {
+    throw new Error('PERPLEXITY_API_KEY not configured');
   }
 
   const systemPrompt = context
     ? `Você está pesquisando informações sobre: ${context}. Responda de forma objetiva e factual.`
-    : 'Responda de forma objetiva e factual.'
+    : 'Responda de forma objetiva e factual.';
 
-  const response = await fetch('https://api.perplexity.ai/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'llama-3.1-sonar-small-128k-online',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: query }
-      ],
-      max_tokens: 1000,
-      temperature: 0.2,
-    }),
-  })
+  secureLog('info', 'Calling Perplexity API', requestId, { queryLength: query.length });
 
-  if (!response.ok) {
-    throw new Error(`Perplexity API error: ${response.status}`)
-  }
+  const response = await secureFetch(
+    'https://api.perplexity.ai/chat/completions',
+    requestId,
+    {
+      headers: PerplexityConfig.getHeaders(),
+      body: {
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: query },
+        ],
+        max_tokens: 1000,
+        temperature: 0.2,
+      },
+    }
+  );
 
-  const data: PerplexityResponse = await response.json()
-  return data.choices?.[0]?.message?.content || ''
+  const data = await response.json() as PerplexityResponse;
+  const content = data.choices?.[0]?.message?.content || '';
+  const tokensUsed = data.usage?.total_tokens;
+
+  secureLog('info', 'Perplexity response received', requestId, {
+    contentLength: content.length,
+    tokensUsed,
+  });
+
+  return {
+    text: content,
+    tokens_used: tokensUsed,
+  };
 }
 
-// Create server
+// ===================================
+// MCP SERVER
+// ===================================
+
 const server = new Server(
   {
     name: 'perplexity-mcp',
@@ -65,7 +133,7 @@ const server = new Server(
       tools: {},
     },
   }
-)
+);
 
 // List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -79,14 +147,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             query: {
               type: 'string',
-              description: 'A consulta de busca',
+              description: 'A consulta de busca (1-2000 chars)',
+              minLength: 1,
+              maxLength: 2000,
             },
             context: {
               type: 'string',
-              description: 'Contexto adicional para a busca (opcional)',
+              description: 'Contexto adicional para a busca (opcional, max 500 chars)',
+              maxLength: 500,
             },
           },
           required: ['query'],
+          additionalProperties: false,
         },
       },
       {
@@ -97,59 +169,95 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             query: {
               type: 'string',
-              description: 'A consulta específica sobre Arbache Consulting',
+              description: 'A consulta específica sobre Arbache Consulting (1-2000 chars)',
+              minLength: 1,
+              maxLength: 2000,
             },
           },
           required: ['query'],
+          additionalProperties: false,
         },
       },
     ],
-  }
-})
+  };
+});
 
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params
+  const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+
+  secureLog('info', 'Tool called', requestId, { tool: name });
 
   try {
     switch (name) {
       case 'search': {
-        const query = args?.query as string
-        const context = args?.context as string | undefined
-        const result = await searchPerplexity(query, context)
+        // Validate input with Zod
+        const validated = SearchInputV1.parse(args);
+
+        const result = await searchPerplexity(
+          validated.query,
+          validated.context,
+          requestId
+        );
+
+        // Validate output
+        const output = TextOutputV1.parse(result);
+
+        secureLog('info', 'Tool completed', requestId, { tool: name, success: true });
+
         return {
-          content: [{ type: 'text', text: result }],
-        }
+          content: [{ type: 'text', text: output.text }],
+        };
       }
 
       case 'search_arbache': {
-        const query = args?.query as string
+        // Validate input
+        const validated = SearchInputV1.pick({ query: true }).parse(args);
+
         const result = await searchPerplexity(
-          query,
-          'Arbache Consulting, Ana Paula Arbache, consultoria em educação corporativa, liderança e ESG'
-        )
+          validated.query,
+          'Arbache Consulting, Ana Paula Arbache, consultoria em educação corporativa, liderança e ESG',
+          requestId
+        );
+
+        // Validate output
+        const output = TextOutputV1.parse(result);
+
+        secureLog('info', 'Tool completed', requestId, { tool: name, success: true });
+
         return {
-          content: [{ type: 'text', text: result }],
-        }
+          content: [{ type: 'text', text: output.text }],
+        };
       }
 
       default:
-        throw new Error(`Unknown tool: ${name}`)
+        throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    secureLog('error', 'Tool failed', requestId, {
+      tool: name,
+      error: errorMessage,
+    });
+
     return {
       content: [{ type: 'text', text: `Error: ${errorMessage}` }],
       isError: true,
-    }
+    };
   }
-})
+});
 
 // Run server
 async function main() {
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
-  console.error('Perplexity MCP Server running on stdio')
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+
+  const startupId = generateRequestId();
+  secureLog('info', 'Perplexity MCP Server started', startupId, {
+    hasApiKey: PerplexityConfig.hasApiKey(),
+  });
 }
 
-main().catch(console.error)
+main().catch(console.error);
