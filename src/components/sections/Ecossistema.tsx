@@ -98,21 +98,25 @@ const orbitalNodes = [
 ]
 
 // ===================================
-// HELPER: Calculate shortened line endpoint
+// HELPER: Calculate shortened line endpoints (both ends)
 // ===================================
 
-function getShortenedLineEnd(
+function getShortenedLine(
   x1: number, y1: number,
   x2: number, y2: number,
-  shortenBy: number
-): { x: number; y: number } {
+  shortenStart: number,
+  shortenEnd: number
+): { x1: number; y1: number; x2: number; y2: number } {
   const dx = x2 - x1
   const dy = y2 - y1
   const length = Math.sqrt(dx * dx + dy * dy)
-  const ratio = (length - shortenBy) / length
+  const startRatio = shortenStart / length
+  const endRatio = (length - shortenEnd) / length
   return {
-    x: x1 + dx * ratio,
-    y: y1 + dy * ratio
+    x1: x1 + dx * startRatio,
+    y1: y1 + dy * startRatio,
+    x2: x1 + dx * endRatio,
+    y2: y1 + dy * endRatio
   }
 }
 
@@ -233,15 +237,15 @@ export function Ecossistema() {
               {/* Connection Lines Group */}
               <g id="ecosystem-links" className="ecosystem__links">
                 {orbitalNodes.map((node) => {
-                  const end = getShortenedLineEnd(HUB.cx, HUB.cy, node.cx, node.cy, 40)
+                  const line = getShortenedLine(HUB.cx, HUB.cy, node.cx, node.cy, HUB.r, 40)
                   return (
                     <line
                       key={`link-${node.id}`}
                       className="ecosystem__link"
-                      x1={HUB.cx}
-                      y1={HUB.cy}
-                      x2={end.x}
-                      y2={end.y}
+                      x1={line.x1}
+                      y1={line.y1}
+                      x2={line.x2}
+                      y2={line.y2}
                     />
                   )
                 })}

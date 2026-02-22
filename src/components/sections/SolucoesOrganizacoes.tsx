@@ -190,18 +190,22 @@ function getExpandedPosition(
   }
 }
 
-function getShortenedLineEnd(
+function getShortenedLine(
   x1: number, y1: number,
   x2: number, y2: number,
-  shortenBy: number
-): { x: number; y: number } {
+  shortenStart: number,
+  shortenEnd: number
+): { x1: number; y1: number; x2: number; y2: number } {
   const dx = x2 - x1
   const dy = y2 - y1
   const length = Math.sqrt(dx * dx + dy * dy)
-  const ratio = (length - shortenBy) / length
+  const startRatio = shortenStart / length
+  const endRatio = (length - shortenEnd) / length
   return {
-    x: x1 + dx * ratio,
-    y: y1 + dy * ratio
+    x1: x1 + dx * startRatio,
+    y1: y1 + dy * startRatio,
+    x2: x1 + dx * endRatio,
+    y2: y1 + dy * endRatio
   }
 }
 
@@ -346,7 +350,7 @@ export function SolucoesOrganizacoes() {
                 const targetPos = isExpanded
                   ? expandedPositions[node.id]
                   : { cx: node.cx, cy: node.cy }
-                const end = getShortenedLineEnd(HUB.cx, HUB.cy, targetPos.cx, targetPos.cy, 20)
+                const line = getShortenedLine(HUB.cx, HUB.cy, targetPos.cx, targetPos.cy, HUB.r, 20)
 
                 return (
                   <line
@@ -355,10 +359,10 @@ export function SolucoesOrganizacoes() {
                       'solucoes__link',
                       isExpanded && 'solucoes__link--expanded'
                     )}
-                    x1={HUB.cx}
-                    y1={HUB.cy}
-                    x2={end.x}
-                    y2={end.y}
+                    x1={line.x1}
+                    y1={line.y1}
+                    x2={line.x2}
+                    y2={line.y2}
                   />
                 )
               })}
