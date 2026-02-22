@@ -7,7 +7,6 @@ import './solucoes.css'
 
 // ===================================
 // NODE DATA (11 orbital nodes + hub)
-// Com ícones e descrições detalhadas
 // ===================================
 
 interface NodeData {
@@ -16,7 +15,6 @@ interface NodeData {
   description: string
   label: string[]
   icon: string
-  details: string
 }
 
 const nodesData: Record<string, NodeData> = {
@@ -25,96 +23,84 @@ const nodesData: Record<string, NodeData> = {
     title: 'Arbache Consulting',
     description: 'Soluções integradas para organizações que buscam excelência em educação corporativa, liderança e sustentabilidade.',
     label: ['ARBACHE', 'CONSULTING', 'ORGANIZAÇÕES'],
-    icon: '◆',
-    details: 'A Arbache Consulting oferece um ecossistema completo de soluções para organizações que buscam transformação sustentável. Integramos educação corporativa, desenvolvimento de lideranças e práticas ESG em uma abordagem única e personalizada.'
+    icon: '◆'
   },
   'node-01': {
     id: 'node-01',
     title: 'Trilhas e Programas Educacionais',
-    description: 'Desenvolva competências estratégicas com trilhas personalizadas e master classes exclusivas.',
+    description: 'Desenvolva competências estratégicas com trilhas personalizadas e master classes exclusivas. Nossos programas combinam teoria e prática para transformar conhecimento em resultados concretos para sua organização.',
     label: ['Trilhas e', 'Programas'],
-    icon: '▣',
-    details: 'Criamos trilhas de aprendizagem personalizadas que combinam teoria e prática em formatos envolventes. Nossos programas incluem master classes, workshops imersivos e jornadas de desenvolvimento contínuo, sempre alinhados aos objetivos estratégicos da sua organização. Utilizamos metodologias ativas e cases reais para garantir aplicação imediata do conhecimento.'
+    icon: '▣'
   },
   'node-02': {
     id: 'node-02',
     title: 'Curadoria de Produtos e Certificações',
-    description: 'Selecione produtos e certificações de excelência com nossa curadoria especializada.',
+    description: 'Selecione produtos e certificações de excelência com nossa curadoria especializada. Criamos infoprodutos educacionais que agregam valor e certificam competências essenciais para o mercado.',
     label: ['Curadoria e', 'Certificações'],
-    icon: '★',
-    details: 'Nossa curadoria especializada seleciona os melhores produtos educacionais e certificações do mercado. Desenvolvemos infoprodutos exclusivos e programas de certificação que validam competências essenciais. Cada produto passa por rigorosa avaliação de qualidade e relevância para garantir resultados tangíveis para profissionais e organizações.'
+    icon: '★'
   },
   'node-03': {
     id: 'node-03',
     title: 'Formação de Lideranças',
-    description: 'Forme líderes preparados para os desafios contemporâneos com foco em ESG e inclusão.',
+    description: 'Forme líderes preparados para os desafios contemporâneos. Programas focados em ESG, liderança feminina e gestão de equipes de alta performance para uma gestão mais inclusiva e sustentável.',
     label: ['Formação de', 'Lideranças'],
-    icon: '◈',
-    details: 'Desenvolvemos líderes preparados para navegar em cenários complexos e liderar com propósito. Nossos programas abordam liderança sustentável, gestão de equipes diversas, liderança feminina e competências ESG. Formamos líderes que inspiram, engajam e geram resultados sustentáveis, criando culturas organizacionais mais inclusivas e inovadoras.'
+    icon: '◈'
   },
   'node-04': {
     id: 'node-04',
     title: 'Assessment Soft Skills + IA',
-    description: 'Mapeie competências comportamentais com precisão usando inteligência artificial.',
+    description: 'Mapeie competências comportamentais com precisão usando inteligência artificial. Nossa metodologia inovadora identifica talentos e pontos de desenvolvimento para decisões estratégicas de RH.',
     label: ['Assessment', 'Soft Skills'],
-    icon: '◉',
-    details: 'Nossa metodologia inovadora combina inteligência artificial com expertise humana para mapear competências comportamentais com precisão. Identificamos talentos, pontos de desenvolvimento e potencial de liderança, fornecendo insights acionáveis para decisões estratégicas de RH. O assessment gera relatórios detalhados com planos de desenvolvimento personalizados.'
+    icon: '◉'
   },
   'node-05': {
     id: 'node-05',
     title: 'Senior Advisor Sustentabilidade e ESG',
-    description: 'Conte com expertise sênior em sustentabilidade corporativa e práticas ESG.',
+    description: 'Conte com expertise sênior em sustentabilidade corporativa. Orientação estratégica para integrar práticas ESG ao core business, gerando valor para stakeholders e sociedade.',
     label: ['Senior Advisor', 'ESG'],
-    icon: '⬡',
-    details: 'Oferecemos consultoria sênior em sustentabilidade e ESG para organizações em diferentes estágios de maturidade. Nossa orientação estratégica ajuda a integrar práticas ambientais, sociais e de governança ao core business, gerando valor para stakeholders e sociedade. Acompanhamos desde o diagnóstico até a implementação e mensuração de resultados.'
+    icon: '⬡'
   },
   'node-06': {
     id: 'node-06',
     title: 'Mentoria de Alto Impacto',
-    description: 'Acelere sua trajetória profissional com mentoria personalizada e metodologia comprovada.',
+    description: 'Acelere sua trajetória profissional com mentoria personalizada. Acompanhamento individual em carreira, ESG, IA, tecnologia e gestão de pessoas com metodologia comprovada.',
     label: ['Mentoria de', 'Alto Impacto'],
-    icon: '▲',
-    details: 'Mentoria executiva personalizada para profissionais que buscam acelerar sua trajetória. Oferecemos acompanhamento individual em temas como carreira, liderança, ESG, IA e gestão de pessoas. Nossa metodologia comprovada combina sessões estruturadas, ferramentas práticas e accountability para garantir evolução consistente e resultados mensuráveis.'
+    icon: '▲'
   },
   'node-07': {
     id: 'node-07',
     title: 'Auditorias e Relatórios Técnicos',
-    description: 'Obtenha diagnósticos precisos e documentação técnica especializada.',
+    description: 'Obtenha diagnósticos precisos e documentação técnica especializada. Auditorias e pareceres em ESG, sustentabilidade, educação e tecnologia para embasar suas decisões corporativas.',
     label: ['Auditorias e', 'Relatórios'],
-    icon: '▤',
-    details: 'Realizamos auditorias especializadas e produzimos relatórios técnicos de alta qualidade em ESG, sustentabilidade, educação corporativa e tecnologia. Nossa documentação segue padrões internacionais e fornece diagnósticos precisos, recomendações acionáveis e roadmaps de implementação para embasar decisões corporativas estratégicas.'
+    icon: '▤'
   },
   'node-08': {
     id: 'node-08',
     title: 'Missões e Imersões Técnicas',
-    description: 'Expanda horizontes com experiências de aprendizado internacionais.',
+    description: 'Expanda horizontes com experiências de aprendizado internacionais. Missões técnicas que conectam sua equipe às melhores práticas globais em inovação e gestão.',
     label: ['Missões e', 'Imersões'],
-    icon: '◐',
-    details: 'Organizamos missões técnicas e imersões internacionais que conectam sua equipe às melhores práticas globais. Visitamos centros de excelência, participamos de conferências e realizamos benchmarking com organizações líderes. Cada missão é desenhada para gerar insights aplicáveis e expandir a visão estratégica dos participantes.'
+    icon: '◐'
   },
   'node-09': {
     id: 'node-09',
     title: 'Redes e Networking',
-    description: 'Construa conexões estratégicas que impulsionam negócios.',
+    description: 'Construa conexões estratégicas que impulsionam negócios. Gestão de redes e eventos exclusivos para networking qualificado entre líderes e executivos.',
     label: ['Redes e', 'Networking'],
-    icon: '⬢',
-    details: 'Facilitamos a construção de redes de relacionamento estratégicas entre líderes e executivos. Organizamos eventos exclusivos, grupos de discussão e encontros de networking qualificado. Nossas redes conectam profissionais com interesses comuns, gerando oportunidades de negócios, parcerias e troca de conhecimentos de alto valor.'
+    icon: '⬢'
   },
   'node-10': {
     id: 'node-10',
     title: 'Processos de RH e Gestão',
-    description: 'Estruture processos de RH eficientes e humanizados.',
+    description: 'Estruture processos de RH eficientes e humanizados. Criação e implementação de práticas de gestão de pessoas alinhadas à cultura e objetivos organizacionais.',
     label: ['Processos', 'RH e Gestão'],
-    icon: '⚙',
-    details: 'Desenhamos e implementamos processos de RH modernos, eficientes e centrados nas pessoas. Atuamos em recrutamento e seleção, onboarding, avaliação de desempenho, gestão de clima e planos de carreira. Nossa abordagem equilibra eficiência operacional com experiência do colaborador, transformando RH em parceiro estratégico do negócio.'
+    icon: '⚙'
   },
   'node-11': {
     id: 'node-11',
     title: 'Palestras e Painéis',
-    description: 'Inspire sua audiência com apresentações de alto impacto.',
+    description: 'Inspire sua audiência com apresentações de alto impacto. Palestras, painéis e mesas redondas conduzidas por especialistas em temas relevantes para seu evento corporativo.',
     label: ['Palestras e', 'Painéis'],
-    icon: '◎',
-    details: 'Oferecemos palestras, painéis e mesas redondas conduzidas por especialistas reconhecidos no mercado. Nossos conteúdos abordam liderança, inovação, ESG, transformação digital e tendências de gestão. Cada apresentação é customizada para o contexto do evento e desenhada para inspirar, provocar reflexão e gerar ação na audiência.'
+    icon: '◎'
   }
 }
 
@@ -262,6 +248,7 @@ export function SolucoesOrganizacoes() {
     return positions
   }, [])
 
+  const selectedNodeData = selectedNode ? nodesData[selectedNode] : null
   const hoveredNodeData = hoveredNode && hoveredNode !== 'hub' ? nodesData[hoveredNode] : null
 
   return (
@@ -288,22 +275,16 @@ export function SolucoesOrganizacoes() {
 
         {/* Grid: 1/5 painel | 3/5 diagrama | 1/5 vazio */}
         <div className="solucoes__grid">
-          {/* Coluna 1: Painel de Explicação (1/5) */}
-          <div className={cn('solucoes__panel', hoveredNodeData && 'solucoes__panel--visible')}>
+          {/* Coluna 1: Painel (1/5) */}
+          <div className={cn('solucoes__details', hoveredNodeData && 'solucoes__details--visible')}>
             {hoveredNodeData ? (
               <>
-                <div className="solucoes__panel-header">
-                  <h3 className="solucoes__panel-title">{hoveredNodeData.title}</h3>
-                  <span className="solucoes__panel-icon">{hoveredNodeData.icon}</span>
-                </div>
-                <div className="solucoes__panel-body">
-                  <p className="solucoes__panel-details">{hoveredNodeData.details}</p>
-                </div>
+                <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
+                <span className="solucoes__details-icon">{hoveredNodeData.icon}</span>
+                <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
               </>
             ) : (
-              <p className="solucoes__panel-placeholder">
-                Passe o mouse sobre uma solução para ver detalhes.
-              </p>
+              <p className="solucoes__details-placeholder">Passe o mouse sobre uma solução para ver detalhes.</p>
             )}
           </div>
 
@@ -470,6 +451,7 @@ export function SolucoesOrganizacoes() {
               const isSelected = selectedNode === node.id
               const isActive = isExpanded || isSelected
               const data = nodesData[node.id]
+              const isInner = innerOrbit.some(n => n.id === node.id)
 
               // Posições: original ou expandida
               const currentPos = isExpanded

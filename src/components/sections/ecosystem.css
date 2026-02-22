@@ -77,7 +77,7 @@
 
 /* ===================================
    5. PAINEL DE EXPLICAÇÃO (Coluna 1/5)
-   Max-height: 800px com header + ícone + texto
+   Max-height: 500px com header + ícone + texto
    =================================== */
 
 .ecosystem__panel {
@@ -93,7 +93,7 @@
   pointer-events: none;
   transition: opacity 0.3s ease;
   margin: 0 10px 0 50px;
-  max-height: 800px;
+  max-height: 500px;
   align-self: center;
   transform: translateY(-40px);
 }
@@ -257,17 +257,9 @@
 .ecosystem__node {
   cursor: pointer;
   outline: none;
-  transition: transform 180ms ease-out;
 }
 
-/* Base state - scale 1.14 on hover/focus per NUCLEAR prompt */
-.ecosystem__node--active:not(.ecosystem__hub) {
-  transform: scale(1.14);
-}
-
-.ecosystem__node--selected:not(.ecosystem__hub) {
-  transform: scale(1.14);
-}
+/* Diagrama fixo - sem transformações */
 
 /* Node base circle */
 .node__base {
