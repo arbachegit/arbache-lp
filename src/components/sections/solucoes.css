@@ -31,7 +31,7 @@
 }
 
 .solucoes__container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
   text-align: center;
@@ -65,19 +65,20 @@
 
 .solucoes__viz {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   min-height: 600px;
   height: calc(100vh - 200px);
   max-height: 800px;
   margin: 0 auto;
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 40px;
 }
 
 .solucoes__svg {
-  width: calc(100% - 350px);
+  flex: 1;
+  max-width: 800px;
   height: 100%;
   display: block;
   min-height: 500px;
@@ -303,14 +304,11 @@
 }
 
 /* ===================================
-   9. DETAILS PANEL (LEFT SIDE - ABSOLUTE)
+   9. DETAILS PANEL (LEFT SIDE - FLEX ITEM)
    =================================== */
 
 .solucoes__details {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
   width: 320px;
   height: 380px;
   padding: 24px;
@@ -321,7 +319,6 @@
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   text-align: left;
-  z-index: 10;
   opacity: 0.4;
   transition: opacity 0.3s ease;
 }
