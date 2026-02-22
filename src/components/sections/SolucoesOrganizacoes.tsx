@@ -26,67 +26,67 @@ const nodesData: Record<string, NodeData> = {
   'node-01': {
     id: 'node-01',
     title: 'Trilhas e Programas Educacionais',
-    description: 'Trilhas e programas educacionais personalizados e master classes.',
+    description: 'Desenvolva competências estratégicas com trilhas personalizadas e master classes exclusivas. Nossos programas combinam teoria e prática para transformar conhecimento em resultados concretos para sua organização.',
     label: ['Trilhas e', 'Programas']
   },
   'node-02': {
     id: 'node-02',
     title: 'Curadoria de Produtos e Certificações',
-    description: 'Criação, curadoria de produtos e infoprodutos, certificações educacionais.',
+    description: 'Selecione produtos e certificações de excelência com nossa curadoria especializada. Criamos infoprodutos educacionais que agregam valor e certificam competências essenciais para o mercado.',
     label: ['Curadoria e', 'Certificações']
   },
   'node-03': {
     id: 'node-03',
     title: 'Formação de Lideranças',
-    description: 'Formação de lideranças em ESG, liderança feminina e gestão de equipes.',
+    description: 'Forme líderes preparados para os desafios contemporâneos. Programas focados em ESG, liderança feminina e gestão de equipes de alta performance para uma gestão mais inclusiva e sustentável.',
     label: ['Formação de', 'Lideranças']
   },
   'node-04': {
     id: 'node-04',
     title: 'Assessment Soft Skills + IA',
-    description: 'Mapeamento de Competências – Soft Skills – por meio de Assessment inovador com uso de IA.',
+    description: 'Mapeie competências comportamentais com precisão usando inteligência artificial. Nossa metodologia inovadora identifica talentos e pontos de desenvolvimento para decisões estratégicas de RH.',
     label: ['Assessment', 'Soft Skills']
   },
   'node-05': {
     id: 'node-05',
     title: 'Senior Advisor Sustentabilidade e ESG',
-    description: 'Senior Advisor em Gestão Estratégica de Sustentabilidade e ESG.',
+    description: 'Conte com expertise sênior em sustentabilidade corporativa. Orientação estratégica para integrar práticas ESG ao core business, gerando valor para stakeholders e sociedade.',
     label: ['Senior Advisor', 'ESG']
   },
   'node-06': {
     id: 'node-06',
     title: 'Mentoria de Alto Impacto',
-    description: 'Programa Personalizado de Mentoria de Alto Impacto – Carreira, ESG, IA, Tecnologia e RH.',
+    description: 'Acelere sua trajetória profissional com mentoria personalizada. Acompanhamento individual em carreira, ESG, IA, tecnologia e gestão de pessoas com metodologia comprovada.',
     label: ['Mentoria de', 'Alto Impacto']
   },
   'node-07': {
     id: 'node-07',
     title: 'Auditorias e Relatórios Técnicos',
-    description: 'Auditorias, pareceres e relatórios técnicos em ESG, Sustentabilidade, Educação, IA e Tecnologia.',
+    description: 'Obtenha diagnósticos precisos e documentação técnica especializada. Auditorias e pareceres em ESG, sustentabilidade, educação e tecnologia para embasar suas decisões corporativas.',
     label: ['Auditorias e', 'Relatórios']
   },
   'node-08': {
     id: 'node-08',
     title: 'Missões e Imersões Técnicas',
-    description: 'Missões e imersões técnicas nacionais e internacionais.',
+    description: 'Expanda horizontes com experiências de aprendizado internacionais. Missões técnicas que conectam sua equipe às melhores práticas globais em inovação e gestão.',
     label: ['Missões e', 'Imersões']
   },
   'node-09': {
     id: 'node-09',
     title: 'Redes e Networking',
-    description: 'Gestão de redes conectivas e eventos para networking.',
+    description: 'Construa conexões estratégicas que impulsionam negócios. Gestão de redes e eventos exclusivos para networking qualificado entre líderes e executivos.',
     label: ['Redes e', 'Networking']
   },
   'node-10': {
     id: 'node-10',
     title: 'Processos de RH e Gestão',
-    description: 'Criação e gestão de processos de RH e Gestão de Pessoas.',
+    description: 'Estruture processos de RH eficientes e humanizados. Criação e implementação de práticas de gestão de pessoas alinhadas à cultura e objetivos organizacionais.',
     label: ['Processos', 'RH e Gestão']
   },
   'node-11': {
     id: 'node-11',
     title: 'Palestras e Painéis',
-    description: 'Palestras, painéis, mesas redondas, focus groups, roundtables.',
+    description: 'Inspire sua audiência com apresentações de alto impacto. Palestras, painéis e mesas redondas conduzidas por especialistas em temas relevantes para seu evento corporativo.',
     label: ['Palestras e', 'Painéis']
   }
 }
@@ -202,6 +202,7 @@ export function SolucoesOrganizacoes() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -221,6 +222,10 @@ export function SolucoesOrganizacoes() {
       handleNodeClick(id)
     }
   }, [handleNodeClick])
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setTooltipPos({ x: e.clientX, y: e.clientY })
+  }, [])
 
   // Pré-calcula posições expandidas
   const expandedPositions = useMemo(() => {
@@ -262,6 +267,7 @@ export function SolucoesOrganizacoes() {
         <div
           ref={svgRef}
           className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
+          onMouseMove={handleMouseMove}
         >
           <svg
             id="solucoes-svg"
@@ -520,6 +526,54 @@ export function SolucoesOrganizacoes() {
               )
             })}
           </svg>
+
+          {/* Hover Tooltip */}
+          {hoveredNode && hoveredNode !== 'hub' && tooltipPos && nodesData[hoveredNode] && (
+            <div
+              className="solucoes__tooltip"
+              style={{
+                position: 'fixed',
+                left: tooltipPos.x + 20,
+                top: tooltipPos.y - 190,
+                width: '320px',
+                height: '380px',
+                backgroundColor: '#141418',
+                border: '2px solid white',
+                borderRadius: '16px',
+                padding: '24px',
+                zIndex: 1000,
+                pointerEvents: 'none',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: '25px',
+                  fontWeight: 700,
+                  color: 'white',
+                  marginBottom: '16px',
+                  fontFamily: 'Lato, sans-serif',
+                  lineHeight: 1.2,
+                }}
+              >
+                {nodesData[hoveredNode].title}
+              </h4>
+              <p
+                style={{
+                  fontSize: '20px',
+                  fontWeight: 400,
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  fontFamily: 'Lato, sans-serif',
+                  lineHeight: 1.5,
+                  flex: 1,
+                }}
+              >
+                {nodesData[hoveredNode].description}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Details Panel */}

@@ -380,6 +380,16 @@ export function AgentButton() {
               </button>
             </div>
           </div>
+
+          {/* Footer - Powered by IconsAI */}
+          <div className="px-4 py-2 border-t border-[#2a2a30] flex items-center justify-center gap-2">
+            <span className="text-gray-500 text-xs">powered by</span>
+            <img
+              src="/images/iconsai-logo.png"
+              alt="IconsAI"
+              style={{ height: '22px', width: 'auto' }}
+            />
+          </div>
         </div>
       )}
 
