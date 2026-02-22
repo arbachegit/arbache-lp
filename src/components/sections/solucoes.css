@@ -308,13 +308,12 @@
 
 .solucoes__details {
   position: fixed;
-  left: 0;
+  left: 1vw;
   top: 50%;
   transform: translateY(-50%);
-  width: 20vw;
-  max-width: 280px;
+  width: 18vw;
   max-height: 350px;
-  padding: 24px;
+  padding: 20px;
   background: var(--bg);
   border: 2px solid white;
   border-radius: 16px;
