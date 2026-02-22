@@ -1,28 +1,28 @@
 /* ===================================
-   ECOSYSTEM SECTION - SVG INTERATIVO
-   Tokens e classes determinísticos
+   SOLUÇÕES PARA ORGANIZAÇÕES - SVG INTERATIVO
+   Design idêntico ao Nosso Ecossistema
    =================================== */
 
 /* ===================================
    1. DESIGN TOKENS (valores fixos)
    =================================== */
 
-.ecosystem {
-  --bg: #0B0B0C;
-  --panel: #111114;
+.solucoes {
+  --bg: #141418;
+  --panel: #1A1A1F;
   --text: #F2F2F2;
-  --muted: #B9B9B9;
-  --line: #2A2A2E;
-  --ring0: #2A2A2E;
-  --ring1: #E6E6E6;
-  --dotHex: #A0A0A0;
+  --muted: #A8A8A8;
+  --line: #333338;
+  --ring0: #333338;
+  --ring1: #D0D0D0;
+  --dotHex: #909090;
 }
 
 /* ===================================
    2. SECTION CONTAINER
    =================================== */
 
-.ecosystem {
+.solucoes {
   background: var(--bg);
   padding: 100px 0;
   min-height: 100vh;
@@ -30,7 +30,7 @@
   align-items: center;
 }
 
-.ecosystem__container {
+.solucoes__container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
@@ -41,7 +41,7 @@
    3. TYPOGRAPHY
    =================================== */
 
-.ecosystem__title {
+.solucoes__title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   color: var(--text);
@@ -49,7 +49,7 @@
   letter-spacing: 0.02em;
 }
 
-.ecosystem__subtitle {
+.solucoes__subtitle {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: clamp(1rem, 2vw, 1.25rem);
@@ -63,7 +63,7 @@
    4. SVG CONTAINER - ANTI-ENCOLHIMENTO
    =================================== */
 
-.ecosystem__viz {
+.solucoes__viz {
   width: 100%;
   max-width: 1000px;
   min-height: 600px;
@@ -76,7 +76,7 @@
   justify-content: center;
 }
 
-.ecosystem__svg {
+.solucoes__svg {
   width: 100%;
   height: 100%;
   display: block;
@@ -87,34 +87,68 @@
    5. CONNECTION LINES
    =================================== */
 
-.ecosystem__link {
+.solucoes__link {
   stroke: var(--line);
-  stroke-width: 2;
-  opacity: 0.9;
+  stroke-width: 1.5;
+  opacity: 0.7;
   stroke-dasharray: 6 4;
-  animation: ecosystem-dash-flow 3s linear infinite;
+  animation: solucoes-dash-flow 3s linear infinite;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes ecosystem-dash-flow {
+.solucoes__link--expanded {
+  stroke: var(--ring1);
+  stroke-width: 2;
+  opacity: 1;
+}
+
+@keyframes solucoes-dash-flow {
   to {
     stroke-dashoffset: -20;
   }
 }
 
 /* ===================================
+   5.1 GHOST CIRCLE (anchor point)
+   =================================== */
+
+/* Ghost 2: Buffer invisível - área de hover estável */
+.solucoes__ghost--buffer {
+  fill: #141418;
+  stroke: none;
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Ghost 1: Âncora visual branca */
+.solucoes__ghost--anchor {
+  fill: rgba(255, 255, 255, 0.95);
+  stroke: var(--ring1);
+  stroke-width: 2;
+  cursor: pointer;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+  transition: all 0.2s ease;
+}
+
+.solucoes__ghost--anchor:hover {
+  fill: white;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+}
+
+/* ===================================
    6. HUB (CENTER NODE)
    =================================== */
 
-.ecosystem__hub {
+.solucoes__hub {
   cursor: pointer;
   outline: none;
 }
 
-.ecosystem__hub--pulse {
-  animation: ecosystem-hub-pulse 2.8s ease-in-out infinite;
+.solucoes__hub--pulse {
+  animation: solucoes-hub-pulse 2.8s ease-in-out infinite;
 }
 
-@keyframes ecosystem-hub-pulse {
+@keyframes solucoes-hub-pulse {
   0%, 100% {
     transform: scale(1);
   }
@@ -123,130 +157,148 @@
   }
 }
 
-.node__base--hub {
+.solucoes .node__base--hub {
   fill: var(--bg);
   stroke: var(--ring1);
   stroke-width: 2;
   transition: all 0.3s ease;
 }
 
-.node__ring {
+.solucoes .node__ring {
   stroke: var(--line);
   opacity: 0.5;
 }
 
-.node__label--hub-main {
+.solucoes .node__label--hub-main {
   fill: var(--text);
   font-family: 'Cinzel', serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 2px;
   pointer-events: none;
 }
 
-.node__label--hub-sub {
+.solucoes .node__label--hub-sub {
   fill: var(--muted);
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: 1px;
   pointer-events: none;
 }
 
+.solucoes .node__label--hub-terceiro {
+  fill: var(--muted);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 /* Hub hover/active states */
-.ecosystem__hub:hover .node__base--hub,
-.ecosystem__hub:focus .node__base--hub,
-.ecosystem__hub.ecosystem__node--active .node__base--hub {
+.solucoes__hub:hover .node__base--hub,
+.solucoes__hub:focus .node__base--hub,
+.solucoes__hub.solucoes__node--active .node__base--hub {
   stroke: var(--text);
   stroke-width: 3;
 }
 
-.ecosystem__hub:focus-visible .node__base--hub {
-  filter: url(#glowFilter);
+.solucoes__hub:focus-visible .node__base--hub {
+  filter: url(#glowFilterSolucoes);
 }
 
 /* ===================================
    7. ORBITAL NODES
    =================================== */
 
-.ecosystem__node {
+.solucoes__node {
   cursor: pointer;
   outline: none;
-  transition: transform 180ms ease-out;
 }
 
-/* Base state - scale 1.14 on hover/focus per NUCLEAR prompt */
-.ecosystem__node--active:not(.ecosystem__hub) {
-  transform: scale(1.14);
-}
-
-.ecosystem__node--selected:not(.ecosystem__hub) {
-  transform: scale(1.14);
-}
-
-/* Node base circle */
-.node__base {
+/* Node base circle - with smooth transitions */
+.solucoes .node__base {
   fill: rgba(255, 255, 255, 0.02);
   stroke: var(--muted);
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-opacity: 0.55;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ecosystem__node--active .node__base,
-.ecosystem__node:hover .node__base,
-.ecosystem__node:focus .node__base {
+/* Expanded state */
+.solucoes__node--expanded .node__base {
+  fill: rgba(255, 255, 255, 0.05);
   stroke: var(--text);
-  stroke-opacity: 0.75;
-  stroke-width: 2.5;
+  stroke-opacity: 1;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
 }
 
-.ecosystem__node:focus-visible .node__base {
-  filter: url(#glowFilter);
+.solucoes__node--active .node__base,
+.solucoes__node:hover .node__base,
+.solucoes__node:focus .node__base {
+  stroke: var(--text);
+  stroke-opacity: 0.85;
+  stroke-width: 2;
 }
 
-/* Node label */
-.node__label {
+.solucoes__node:focus-visible .node__base {
+  filter: url(#glowFilterSolucoes);
+}
+
+/* Node label - with transition */
+.solucoes .node__label {
   fill: var(--text);
   font-family: 'Lato', sans-serif;
   font-size: 12px;
   font-weight: 500;
   pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.solucoes__node--expanded .node__label {
+  fill: white;
+  font-weight: 600;
 }
 
 /* ===================================
    8. ARC LOADER
    =================================== */
 
-.node__arc {
-  stroke: url(#arcGradient);
+.solucoes .node__arc {
+  stroke: url(#arcGradientSolucoes);
   opacity: 0.3;
-  transition: opacity 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.node__arc--animated {
-  animation: ecosystem-arc-rotate 3.6s linear infinite;
+.solucoes .node__arc--animated {
+  animation: solucoes-arc-rotate 3.6s linear infinite;
 }
 
-.ecosystem__node--active .node__arc {
-  opacity: 0.7;
+.solucoes__node--active .node__arc,
+.solucoes__node--expanded .node__arc {
+  opacity: 0.8;
   animation-duration: 2.4s;
 }
 
-@keyframes ecosystem-arc-rotate {
+@keyframes solucoes-arc-rotate {
   to {
     transform: rotate(360deg);
   }
 }
 
 /* Dot */
-.node__dot {
+.solucoes .node__dot {
   fill: var(--dotHex);
   opacity: 0.6;
-  transition: opacity 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ecosystem__node--active .node__dot {
+.solucoes__node--active .node__dot,
+.solucoes__node--expanded .node__dot {
+  fill: white;
   opacity: 1;
 }
 
@@ -254,7 +306,7 @@
    9. DETAILS PANEL
    =================================== */
 
-.ecosystem__details {
+.solucoes__details {
   max-width: 600px;
   margin: 40px auto 0;
   padding: 24px;
@@ -268,21 +320,21 @@
   min-height: 60px;
 }
 
-.ecosystem__details--visible {
+.solucoes__details--visible {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
   padding: 32px;
 }
 
-.ecosystem__details-title {
+.solucoes__details-title {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   color: var(--text);
   margin-bottom: 12px;
 }
 
-.ecosystem__details-desc {
+.solucoes__details-desc {
   font-family: 'Lato', sans-serif;
   font-size: 1rem;
   color: var(--muted);
@@ -290,7 +342,7 @@
   margin-bottom: 20px;
 }
 
-.ecosystem__details-placeholder {
+.solucoes__details-placeholder {
   font-family: 'Lato', sans-serif;
   font-size: 1rem;
   color: var(--muted);
@@ -298,7 +350,7 @@
   margin: 0;
 }
 
-.ecosystem__details-close {
+.solucoes__details-close {
   background: transparent;
   border: 1px solid var(--line);
   color: var(--muted);
@@ -312,7 +364,7 @@
   transition: all 0.2s ease;
 }
 
-.ecosystem__details-close:hover {
+.solucoes__details-close:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   border-color: var(--ring1);
@@ -323,23 +375,23 @@
    =================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .ecosystem__hub--pulse {
+  .solucoes__hub--pulse {
     animation: none;
   }
 
-  .node__arc--animated {
+  .solucoes .node__arc--animated {
     animation: none;
   }
 
-  .ecosystem__link {
+  .solucoes__link {
     animation: none;
   }
 
-  .ecosystem__node {
+  .solucoes__node {
     transition-duration: 0.1s;
   }
 
-  .ecosystem__details {
+  .solucoes__details {
     transition-duration: 0.1s;
   }
 }
@@ -349,15 +401,15 @@
    =================================== */
 
 @media (max-width: 768px) {
-  .ecosystem {
+  .solucoes {
     padding: 60px 0;
   }
 
-  .ecosystem__subtitle {
+  .solucoes__subtitle {
     margin-bottom: 40px;
   }
 
-  .ecosystem__viz {
+  .solucoes__viz {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -366,34 +418,34 @@
     height: auto;
   }
 
-  .ecosystem__svg {
+  .solucoes__svg {
     min-width: 700px;
     min-height: 420px;
   }
 
-  .ecosystem__details--visible {
+  .solucoes__details--visible {
     padding: 24px;
   }
 
-  .ecosystem__details-title {
+  .solucoes__details-title {
     font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
-  .ecosystem__title {
+  .solucoes__title {
     font-size: 1.5rem;
   }
 
-  .ecosystem__subtitle {
+  .solucoes__subtitle {
     font-size: 1rem;
   }
 
-  .ecosystem__viz {
+  .solucoes__viz {
     min-height: 450px;
   }
 
-  .ecosystem__svg {
+  .solucoes__svg {
     min-width: 600px;
     min-height: 360px;
   }

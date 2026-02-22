@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "perplexity": {
+      "command": "npx",
+      "args": ["tsx", "perplexity/index.ts"],
+      "cwd": "./mcp-servers",
+      "env": {
+        "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}"
+      }
+    },
+    "anthropic": {
+      "command": "npx",
+      "args": ["tsx", "anthropic/index.ts"],
+      "cwd": "./mcp-servers",
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      }
+    },
+    "openai": {
+      "command": "npx",
+      "args": ["tsx", "openai/index.ts"],
+      "cwd": "./mcp-servers",
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    }
+  }
+}

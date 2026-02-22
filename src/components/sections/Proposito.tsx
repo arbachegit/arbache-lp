@@ -26,7 +26,7 @@ function Counter({ target, label, isYear = false }: { target: number; label: str
 
   return (
     <div ref={ref} className="text-center">
-      <div className="font-[Cinzel] text-[2.8rem] font-bold text-[#D8F3DC]">
+      <div className="font-[Cinzel] text-[2.8rem] font-bold text-[#E6E6E6]">
         {isVisible ? formatNumber(count) : '—'}
       </div>
       <div className="font-[Montserrat] text-[0.7rem] tracking-[0.12em] uppercase text-white/60 mt-1">
@@ -46,7 +46,7 @@ export function Proposito() {
       id="proposito"
       className="py-[100px] relative overflow-hidden text-white"
       style={{
-        background: 'linear-gradient(135deg, #2D6A4F, #1B4332)',
+        background: 'linear-gradient(135deg, #1a1a1a, #0d0d0d)',
       }}
     >
       {/* Pattern overlay */}
@@ -61,7 +61,7 @@ export function Proposito() {
         <div ref={titleRef}>
           <h2
             className={cn(
-              'font-section text-[clamp(1.8rem,3.5vw,2.8rem)] mb-4 text-[#D8F3DC] reveal',
+              'font-section text-[clamp(1.8rem,3.5vw,2.8rem)] mb-4 text-[#E6E6E6] reveal',
               titleVisible && 'visible'
             )}
           >
@@ -85,7 +85,7 @@ export function Proposito() {
           )}
         >
           <div className="bg-white/8 rounded-xl p-9 border border-white/10 backdrop-blur-[4px]">
-            <h3 className="font-section text-[1.3rem] mb-3 text-[#D8F3DC]">Missão</h3>
+            <h3 className="font-section text-[1.3rem] mb-3 text-[#E6E6E6]">Missão</h3>
             <p className="text-white/80 text-[0.95rem]">
               Promover educação de excelência e personalizada para negócios, lideranças e talentos,
               integrando rigor acadêmico, práticas de mercado, inovação tecnológica, conexões e
@@ -94,7 +94,7 @@ export function Proposito() {
             </p>
           </div>
           <div className="bg-white/8 rounded-xl p-9 border border-white/10 backdrop-blur-[4px]">
-            <h3 className="font-section text-[1.3rem] mb-3 text-[#D8F3DC]">Visão</h3>
+            <h3 className="font-section text-[1.3rem] mb-3 text-[#E6E6E6]">Visão</h3>
             <p className="text-white/80 text-[0.95rem]">
               Ser referência em educação em negócios, reconhecida pela excelência e personalização
               na formação de lideranças e talentos conscientes e inovadores, que geram resultados de
@@ -120,9 +120,9 @@ export function Proposito() {
           {valores.map((valor) => (
             <div
               key={valor.title}
-              className="bg-white/6 rounded-lg p-6 border-l-[3px] border-[#D8F3DC] text-left"
+              className="bg-white/6 rounded-lg p-6 border-l-[3px] border-[#E6E6E6] text-left"
             >
-              <strong className="text-[#D8F3DC]">{valor.title}</strong>
+              <strong className="text-[#E6E6E6]">{valor.title}</strong>
               <span className="text-white/80"> — {valor.desc}</span>
             </div>
           ))}

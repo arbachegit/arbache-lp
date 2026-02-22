@@ -1,0 +1,20 @@
+{
+  "name": "arbache-mcp-servers",
+  "version": "1.0.0",
+  "description": "MCP Servers for Arbache LP - Perplexity, Anthropic, OpenAI",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "perplexity": "tsx perplexity/index.ts",
+    "anthropic": "tsx anthropic/index.ts",
+    "openai": "tsx openai/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

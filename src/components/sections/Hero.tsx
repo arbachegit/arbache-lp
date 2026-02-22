@@ -17,7 +17,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="min-h-screen flex items-center justify-center relative"
+      className="min-h-screen flex items-center justify-center relative pt-24"
       style={{
         background: `linear-gradient(135deg, rgba(0,0,0,0.78), rgba(26,26,26,0.55)), url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80') center/cover no-repeat`,
       }}
@@ -28,11 +28,13 @@ export function Hero() {
       >
         <h1
           className={cn(
-            'font-hero text-[clamp(2rem,5vw,3.8rem)] text-white leading-[1.2] mb-6 reveal',
+            'font-hero text-[30px] text-white leading-[1.4] mb-6 reveal flex flex-col gap-8',
             contentVisible && 'visible'
           )}
         >
-          Transformando o mundo, os negócios e as pessoas por meio da educação
+          <span>Educação de Liderança nos move</span>
+          <span>Inovação impulsiona resultados</span>
+          <span>Sustentabilidade transforma o ser humano e os negócios</span>
         </h1>
 
         <p

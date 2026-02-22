@@ -65,15 +65,19 @@ const nodesData: Record<string, NodeData> = {
 // GEOMETRY (deterministic positions)
 // ===================================
 
-const HUB = { cx: 500, cy: 300, r: 78 }
+const HUB = { cx: 400, cy: 300, r: 78 }
 
+// Symmetric distribution: 6 nodes at 60° intervals (360/6)
+// ViewBox: 800x600, Hub center: (400, 300), Radius = 200
+// Angles: -90°, -30°, 30°, 90°, 150°, 210° (clockwise from top)
+// x = 400 + 200*cos(angle), y = 300 + 200*sin(angle)
 const orbitalNodes = [
-  { id: 'node-01', cx: 500, cy: 90,  r: 54 },
-  { id: 'node-02', cx: 700, cy: 150, r: 54 },
-  { id: 'node-03', cx: 820, cy: 300, r: 54 },
-  { id: 'node-04', cx: 700, cy: 450, r: 54 },
-  { id: 'node-05', cx: 500, cy: 510, r: 54 },
-  { id: 'node-06', cx: 300, cy: 450, r: 54 },
+  { id: 'node-01', cx: 400, cy: 100, r: 70 },  // -90° (top)
+  { id: 'node-02', cx: 573, cy: 200, r: 70 },  // -30° (upper-right)
+  { id: 'node-03', cx: 573, cy: 400, r: 70 },  // +30° (lower-right)
+  { id: 'node-04', cx: 400, cy: 500, r: 70 },  // +90° (bottom)
+  { id: 'node-05', cx: 227, cy: 400, r: 70 },  // +150° (lower-left)
+  { id: 'node-06', cx: 227, cy: 200, r: 70 },  // +210° (upper-left)
 ]
 
 // ===================================
@@ -162,7 +166,7 @@ export function Ecossistema() {
           <svg
             id="ecosystem-svg"
             className="ecosystem__svg"
-            viewBox="0 0 1000 600"
+            viewBox="0 0 800 600"
             preserveAspectRatio="xMidYMid meet"
             xmlns="http://www.w3.org/2000/svg"
             role="img"
@@ -266,7 +270,7 @@ export function Ecossistema() {
               const { isActive, isSelected } = getNodeState(node.id)
               const data = nodesData[node.id]
               const arcRadius = node.r + 14
-              const animDuration = isActive ? '1.4s' : '2.8s'
+              const animDuration = isActive ? '2.4s' : '3.6s'
 
               return (
                 <g

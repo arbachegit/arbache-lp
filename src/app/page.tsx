@@ -9,7 +9,7 @@ import {
   ESG,
   Contato,
   Footer,
-  WhatsAppButton,
+  AgentButton,
 } from '@/components/sections'
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
         <Contato />
       </main>
       <Footer />
-      <WhatsAppButton />
+      <AgentButton />
     </>
   )
 }
