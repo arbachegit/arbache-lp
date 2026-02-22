@@ -202,7 +202,6 @@ export function SolucoesOrganizacoes() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -223,10 +222,6 @@ export function SolucoesOrganizacoes() {
     }
   }, [handleNodeClick])
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setTooltipPos({ x: e.clientX, y: e.clientY })
-  }, [])
-
   // Pré-calcula posições expandidas
   const expandedPositions = useMemo(() => {
     const positions: Record<string, { cx: number; cy: number }> = {}
@@ -241,6 +236,7 @@ export function SolucoesOrganizacoes() {
   }, [])
 
   const selectedNodeData = selectedNode ? nodesData[selectedNode] : null
+  const hoveredNodeData = hoveredNode && hoveredNode !== 'hub' ? nodesData[hoveredNode] : null
 
   return (
     <section id="solucoes-org" className="solucoes">
@@ -268,17 +264,18 @@ export function SolucoesOrganizacoes() {
           ref={svgRef}
           className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
         >
-          {/* Panel on Left - Shows on Hover */}
-          {hoveredNode && hoveredNode !== 'hub' && nodesData[hoveredNode] && (
-            <div className="solucoes__details solucoes__details--visible">
-              <h3 className="solucoes__details-title">
-                {nodesData[hoveredNode].title}
-              </h3>
-              <p className="solucoes__details-desc">
-                {nodesData[hoveredNode].description}
-              </p>
-            </div>
-          )}
+          {/* Painel lateral esquerdo - aparece no hover */}
+          <div className={cn('solucoes__details', hoveredNodeData && 'solucoes__details--visible')}>
+            {hoveredNodeData ? (
+              <>
+                <h3 className="solucoes__details-title">{hoveredNodeData.title}</h3>
+                <p className="solucoes__details-desc">{hoveredNodeData.description}</p>
+              </>
+            ) : (
+              <p className="solucoes__details-placeholder">Passe o mouse sobre uma solução para ver detalhes.</p>
+            )}
+          </div>
+
           <svg
             id="solucoes-svg"
             className="solucoes__svg"
@@ -302,27 +299,21 @@ export function SolucoesOrganizacoes() {
               </filter>
             </defs>
 
-            {/* Ghost Buffer - área de hover estável que cobre nó original + expandido */}
+            {/* Ghost 2 Buffer - renderizado ANTES das linhas (fica atrás) */}
             {allNodes.map((node) => {
               const isExpanded = hoveredNode === node.id
-              const expandedPos = expandedPositions[node.id]
-              // Centro entre posição original e expandida
-              const centerX = (node.cx + expandedPos.cx) / 2
-              const centerY = (node.cy + expandedPos.cy) / 2
-              // Raio grande o suficiente para cobrir ambas posições
-              const coverRadius = EXPAND_DISTANCE + EXPANDED_RADIUS + 10
+              if (!isExpanded) return null
 
               return (
                 <circle
-                  key={`ghost-${node.id}`}
-                  className="solucoes__ghost-area"
-                  cx={centerX}
-                  cy={centerY}
-                  r={coverRadius}
-                  fill="transparent"
+                  key={`ghost2-${node.id}`}
+                  className="solucoes__ghost solucoes__ghost--buffer"
+                  cx={node.cx}
+                  cy={node.cy}
+                  r={GHOST_2_RADIUS}
+                  fill="#141418"
                   onMouseEnter={() => setHoveredNode(node.id)}
                   onMouseLeave={() => setHoveredNode(null)}
-                  style={{ cursor: 'pointer' }}
                 />
               )
             })}
@@ -418,6 +409,24 @@ export function SolucoesOrganizacoes() {
                 ORGANIZAÇÕES
               </text>
             </g>
+
+            {/* Ghost 1 Anchor (âncora branca visível) - na frente da linha */}
+            {allNodes.map((node) => {
+              const isExpanded = hoveredNode === node.id
+              if (!isExpanded) return null
+
+              return (
+                <circle
+                  key={`ghost1-${node.id}`}
+                  className="solucoes__ghost solucoes__ghost--anchor"
+                  cx={node.cx}
+                  cy={node.cy}
+                  r={GHOST_1_RADIUS}
+                  onMouseEnter={() => setHoveredNode(node.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                />
+              )
+            })}
 
             {/* All 11 Orbital Nodes */}
             {allNodes.map((node) => {

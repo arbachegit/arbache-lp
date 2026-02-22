@@ -65,7 +65,7 @@
 
 .solucoes__viz {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   min-height: 600px;
   height: calc(100vh - 200px);
   max-height: 800px;
@@ -73,11 +73,11 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .solucoes__svg {
-  width: 100%;
+  width: calc(100% - 350px);
   height: 100%;
   display: block;
   min-height: 500px;
@@ -322,6 +322,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   text-align: left;
   z-index: 10;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
 }
 
 .solucoes__details--visible {
@@ -402,9 +404,11 @@
     padding-bottom: 20px;
     min-height: 500px;
     height: auto;
+    justify-content: center;
   }
 
   .solucoes__svg {
+    width: 100%;
     min-width: 700px;
     min-height: 420px;
   }
