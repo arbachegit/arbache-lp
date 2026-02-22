@@ -77,11 +77,10 @@
 }
 
 .solucoes__svg {
-  flex: 1;
-  max-width: 800px;
-  height: 100%;
+  width: 800px;
+  height: 600px;
   display: block;
-  min-height: 500px;
+  flex-shrink: 0;
 }
 
 /* ===================================
