@@ -329,6 +329,7 @@
   margin: 0 10px 0 50px;
   max-height: 440px;
   align-self: center;
+  transform: translateY(-40px);
 }
 
 .solucoes__details--visible {
