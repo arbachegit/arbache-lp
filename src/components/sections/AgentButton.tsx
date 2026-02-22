@@ -72,7 +72,10 @@ export function AgentButton() {
     setIsTyping(true)
 
     try {
-      const response = await fetch('/api/chat', {
+      // Backend URL - usa variável de ambiente ou fallback
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.arbache.com'
+
+      const response = await fetch(`${apiUrl}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

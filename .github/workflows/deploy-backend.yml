@@ -1,0 +1,63 @@
+name: Deploy Backend to DigitalOcean
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+env:
+  BACKEND_PATH: /var/www/arbache-lp-api
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy backend files
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            backend/ \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:${{ env.BACKEND_PATH }}/
+
+      - name: Create .env on server
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'EOF'
+          cat > ${{ env.BACKEND_PATH }}/.env << 'ENVFILE'
+          PERPLEXITY_API_KEY=${{ secrets.PERPLEXITY_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          ENVFILE
+          chmod 600 ${{ env.BACKEND_PATH }}/.env
+          EOF
+
+      - name: Build and restart container
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'EOF'
+          cd ${{ env.BACKEND_PATH }}
+          docker compose down || true
+          docker compose build --no-cache
+          docker compose up -d
+          sleep 5
+          docker compose ps
+          EOF
+
+      - name: Verify deployment
+        run: |
+          sleep 5
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
+            "curl -sf http://localhost:8001/health || echo 'Health check pending...'"
