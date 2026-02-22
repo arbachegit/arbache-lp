@@ -264,37 +264,21 @@ export function SolucoesOrganizacoes() {
           </p>
         </div>
 
-        {/* Layout horizontal: painel à esquerda, diagrama à direita */}
-        <div className="solucoes__layout">
-          {/* Left Side Panel - Shows on Hover */}
-          <div
-            id="solucoes-details"
-            className={cn(
-              'solucoes__details',
-              hoveredNode && hoveredNode !== 'hub' && 'solucoes__details--visible'
-            )}
-            aria-live="polite"
-          >
-            {hoveredNode && hoveredNode !== 'hub' && nodesData[hoveredNode] ? (
-              <>
-                <h3 className="solucoes__details-title">
-                  {nodesData[hoveredNode].title}
-                </h3>
-                <p className="solucoes__details-desc">
-                  {nodesData[hoveredNode].description}
-                </p>
-              </>
-            ) : (
-              <p className="solucoes__details-placeholder">
-                Passe o mouse sobre uma solução para ver detalhes.
+        <div
+          ref={svgRef}
+          className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
+        >
+          {/* Panel on Left - Shows on Hover */}
+          {hoveredNode && hoveredNode !== 'hub' && nodesData[hoveredNode] && (
+            <div className="solucoes__details solucoes__details--visible">
+              <h3 className="solucoes__details-title">
+                {nodesData[hoveredNode].title}
+              </h3>
+              <p className="solucoes__details-desc">
+                {nodesData[hoveredNode].description}
               </p>
-            )}
-          </div>
-
-          <div
-            ref={svgRef}
-            className={cn('solucoes__viz reveal reveal-delay-2', svgVisible && 'visible')}
-          >
+            </div>
+          )}
           <svg
             id="solucoes-svg"
             className="solucoes__svg"
@@ -540,7 +524,6 @@ export function SolucoesOrganizacoes() {
               )
             })}
           </svg>
-          </div>
         </div>
       </div>
     </section>
