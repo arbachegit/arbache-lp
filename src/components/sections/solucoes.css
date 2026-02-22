@@ -307,7 +307,7 @@
    =================================== */
 
 .solucoes__details {
-  position: fixed;
+  position: absolute;
   left: 1vw;
   top: 50%;
   transform: translateY(-50%);
