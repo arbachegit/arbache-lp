@@ -70,6 +70,50 @@
   max-width: 650px;
   margin: 0 auto 60px;
   line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Mouse hint animation */
+.solucoes__mouse-hint {
+  display: inline-flex;
+  align-items: center;
+  animation: mouseHintBounce 2s ease-in-out infinite;
+}
+
+.solucoes__mouse-icon {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.solucoes__mouse-hint:hover .solucoes__mouse-icon {
+  opacity: 1;
+}
+
+.solucoes__mouse-scroll {
+  animation: mouseScroll 1.5s ease-in-out infinite;
+}
+
+@keyframes mouseHintBounce {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes mouseScroll {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(2px);
+    opacity: 0.5;
+  }
 }
 
 /* ===================================
