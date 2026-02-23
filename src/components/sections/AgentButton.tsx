@@ -148,7 +148,7 @@ export function AgentButton() {
     <>
       {/* Callout - "Tem dúvidas? pergunte a nossa IA" */}
       <div
-        className={`fixed bottom-6 z-[999] transition-all duration-500 ${
+        className={`fixed z-[999] ${
           showCallout && !isOpen ? 'agent-callout--visible' : 'agent-callout--hidden'
         }`}
         style={{
@@ -159,10 +159,11 @@ export function AgentButton() {
         <div className="flex items-center gap-4">
           {/* Text */}
           <div
-            className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--unfold' : 'agent-callout-text--fold'}`}
+            className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--expand' : 'agent-callout-text--collapse'}`}
             style={{
               fontFamily: 'Cinzel, serif',
               fontSize: '25px',
+              fontWeight: 'bold',
               color: '#ffffff',
               textAlign: 'right',
               lineHeight: '1.3',
@@ -173,17 +174,17 @@ export function AgentButton() {
             <span style={{ display: 'block' }}>nossa IA</span>
           </div>
 
-          {/* Arrow pointing to agent */}
+          {/* Horizontal arrow pointing to agent */}
           <div className="agent-callout-arrow">
             <svg
-              width="24"
-              height="40"
-              viewBox="0 0 24 40"
+              width="40"
+              height="24"
+              viewBox="0 0 40 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M12 0 L12 30 M6 24 L12 30 L18 24"
+                d="M0 12 L30 12 M24 6 L30 12 L24 18"
                 stroke="#ffffff"
                 strokeWidth="2"
                 strokeLinecap="round"
@@ -520,81 +521,93 @@ export function AgentButton() {
           pointer-events: none;
         }
 
-        /* Unfold/Fold animation for text */
+        /* Cloth being pulled through small hole animation */
         .agent-callout-text {
           overflow: hidden;
           transform-origin: right center;
         }
 
-        .agent-callout-text--unfold {
-          animation: unfoldText 0.6s ease-out forwards;
+        .agent-callout-text--expand {
+          animation: clothExpand 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
-        .agent-callout-text--fold {
-          animation: foldText 0.4s ease-in forwards;
+        .agent-callout-text--collapse {
+          animation: clothCollapse 0.5s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
         }
 
-        @keyframes unfoldText {
+        @keyframes clothExpand {
           0% {
-            clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+            transform: scaleY(0.02) scaleX(0.3);
             opacity: 0;
-            transform: scaleX(0) rotateY(-90deg);
+            filter: blur(4px);
           }
-          50% {
-            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
-            transform: scaleX(0.5) rotateY(-45deg);
+          30% {
+            transform: scaleY(0.1) scaleX(0.5);
+            opacity: 0.3;
+            filter: blur(2px);
+          }
+          60% {
+            transform: scaleY(0.5) scaleX(0.8);
+            opacity: 0.7;
+            filter: blur(1px);
           }
           100% {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            transform: scaleY(1) scaleX(1);
             opacity: 1;
-            transform: scaleX(1) rotateY(0deg);
+            filter: blur(0);
           }
         }
 
-        @keyframes foldText {
+        @keyframes clothCollapse {
           0% {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            transform: scaleY(1) scaleX(1);
             opacity: 1;
-            transform: scaleX(1) rotateY(0deg);
+            filter: blur(0);
           }
-          50% {
-            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
-            transform: scaleX(0.5) rotateY(-45deg);
+          40% {
+            transform: scaleY(0.4) scaleX(0.7);
+            opacity: 0.6;
+            filter: blur(1px);
+          }
+          70% {
+            transform: scaleY(0.1) scaleX(0.4);
+            opacity: 0.3;
+            filter: blur(2px);
           }
           100% {
-            clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+            transform: scaleY(0.02) scaleX(0.2);
             opacity: 0;
-            transform: scaleX(0) rotateY(-90deg);
+            filter: blur(4px);
           }
         }
 
-        /* Arrow animation - vertical bounce pointing to agent */
+        /* Arrow animation - horizontal bounce pointing to agent */
         .agent-callout-arrow {
-          animation: arrowBounce 1s ease-in-out infinite;
+          animation: arrowBounceHorizontal 1s ease-in-out infinite;
         }
 
-        @keyframes arrowBounce {
+        @keyframes arrowBounceHorizontal {
           0%, 100% {
             transform: translateX(0);
           }
           50% {
-            transform: translateX(8px);
+            transform: translateX(10px);
           }
         }
 
         .agent-arrow-path {
-          stroke-dasharray: 50;
+          stroke-dasharray: 60;
           stroke-dashoffset: 0;
-          animation: arrowDraw 1.5s ease-in-out infinite;
+          animation: arrowDrawHorizontal 1.5s ease-in-out infinite;
         }
 
-        @keyframes arrowDraw {
+        @keyframes arrowDrawHorizontal {
           0%, 100% {
             stroke-dashoffset: 0;
             opacity: 1;
           }
           50% {
-            stroke-dashoffset: 25;
+            stroke-dashoffset: 30;
             opacity: 0.6;
           }
         }
