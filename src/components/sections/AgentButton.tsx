@@ -2,21 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
-// Agent icon - minimal chat bubble
-const AgentIcon = () => (
+// Agent icon - minimal chat bubble (without dots)
+const AgentIcon = ({ isPulsing = false }: { isPulsing?: boolean }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
     <path
       d="M12 21c5.523 0 10-4.477 10-10S17.523 1 12 1 2 5.477 2 11c0 1.89.525 3.66 1.438 5.168L2 21l4.832-1.438A9.955 9.955 0 0012 21z"
-      stroke="currentColor"
+      stroke={isPulsing ? "rgba(205, 92, 92, 1)" : "currentColor"}
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      fill="none"
+      fill={isPulsing ? "rgba(205, 92, 92, 0.2)" : "none"}
+      className={isPulsing ? "transition-all duration-300" : ""}
     />
-    {/* Three dots for typing indicator */}
-    <circle cx="8" cy="11" r="1" fill="currentColor" />
-    <circle cx="12" cy="11" r="1" fill="currentColor" />
-    <circle cx="16" cy="11" r="1" fill="currentColor" />
   </svg>
 )
 
@@ -159,7 +156,7 @@ export function AgentButton() {
         <div className="flex items-center gap-4">
           {/* Text */}
           <div
-            className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--expand' : 'agent-callout-text--collapse'}`}
+            className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--fadein' : 'agent-callout-text--fadeout'}`}
             style={{
               fontFamily: 'Cinzel, serif',
               fontSize: '25px',
@@ -316,7 +313,20 @@ export function AgentButton() {
               background: 'linear-gradient(135deg, #2a2a30 0%, #404048 50%, #505058 100%)',
             }}
           >
-            <AgentIcon />
+            <AgentIcon isPulsing={showCallout && !isOpen} />
+          </div>
+
+          {/* Red notification dot with radar effect - top right quadrant */}
+          <div className="absolute" style={{ top: '2px', right: '2px' }}>
+            {/* Radar pulses */}
+            {!reducedMotion && (
+              <>
+                <div className="absolute inset-0 w-3 h-3 rounded-full border border-red-400/60 animate-[notif-radar_2s_ease-out_infinite]" />
+                <div className="absolute inset-0 w-3 h-3 rounded-full border border-red-400/60 animate-[notif-radar_2s_ease-out_infinite]" style={{ animationDelay: '0.7s' }} />
+              </>
+            )}
+            {/* Solid red dot */}
+            <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)]" />
           </div>
 
           {/* Subtle outer glow on hover */}
@@ -521,63 +531,46 @@ export function AgentButton() {
           pointer-events: none;
         }
 
-        /* Cloth being pulled through small hole animation */
+        /* Fade in/out animation for callout text */
         .agent-callout-text {
-          overflow: hidden;
-          transform-origin: right center;
+          transition: opacity 0.4s ease;
         }
 
-        .agent-callout-text--expand {
-          animation: clothExpand 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        .agent-callout-text--fadein {
+          animation: fadeIn 0.5s ease-out forwards;
         }
 
-        .agent-callout-text--collapse {
-          animation: clothCollapse 0.5s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+        .agent-callout-text--fadeout {
+          animation: fadeOut 0.4s ease-in forwards;
         }
 
-        @keyframes clothExpand {
+        @keyframes fadeIn {
           0% {
-            transform: scaleY(0.02) scaleX(0.3);
             opacity: 0;
-            filter: blur(4px);
-          }
-          30% {
-            transform: scaleY(0.1) scaleX(0.5);
-            opacity: 0.3;
-            filter: blur(2px);
-          }
-          60% {
-            transform: scaleY(0.5) scaleX(0.8);
-            opacity: 0.7;
-            filter: blur(1px);
           }
           100% {
-            transform: scaleY(1) scaleX(1);
             opacity: 1;
-            filter: blur(0);
           }
         }
 
-        @keyframes clothCollapse {
+        @keyframes fadeOut {
           0% {
-            transform: scaleY(1) scaleX(1);
             opacity: 1;
-            filter: blur(0);
-          }
-          40% {
-            transform: scaleY(0.4) scaleX(0.7);
-            opacity: 0.6;
-            filter: blur(1px);
-          }
-          70% {
-            transform: scaleY(0.1) scaleX(0.4);
-            opacity: 0.3;
-            filter: blur(2px);
           }
           100% {
-            transform: scaleY(0.02) scaleX(0.2);
             opacity: 0;
-            filter: blur(4px);
+          }
+        }
+
+        /* Red notification dot radar effect */
+        @keyframes notif-radar {
+          0% {
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(3);
+            opacity: 0;
           }
         }
 
