@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // Agent icon - minimal chat bubble
 const AgentIcon = () => (
@@ -52,6 +52,7 @@ export function AgentButton() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'agent'; content: string }>>([])
   const [isTyping, setIsTyping] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [showCallout, setShowCallout] = useState(false)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -60,6 +61,41 @@ export function AgentButton() {
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
+
+  // Detect section boundaries
+  const checkSectionBoundary = useCallback(() => {
+    if (isOpen) {
+      setShowCallout(false)
+      return
+    }
+
+    const sections = document.querySelectorAll('section[id]')
+    const agentButton = document.querySelector('.agent-button-container')
+    if (!agentButton) return
+
+    const agentRect = agentButton.getBoundingClientRect()
+    const agentCenter = agentRect.top + agentRect.height / 2
+
+    let isAtBoundary = false
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect()
+      const bottomThreshold = rect.bottom
+      const tolerance = 150 // pixels from section bottom
+
+      if (agentCenter >= bottomThreshold - tolerance && agentCenter <= bottomThreshold + tolerance) {
+        isAtBoundary = true
+      }
+    })
+
+    setShowCallout(isAtBoundary)
+  }, [isOpen])
+
+  useEffect(() => {
+    window.addEventListener('scroll', checkSectionBoundary, { passive: true })
+    checkSectionBoundary()
+    return () => window.removeEventListener('scroll', checkSectionBoundary)
+  }, [checkSectionBoundary])
 
   const handleSend = async () => {
     if (!message.trim()) return
@@ -110,11 +146,60 @@ export function AgentButton() {
 
   return (
     <>
+      {/* Callout - "Tem dúvidas? pergunte a nossa IA" */}
+      <div
+        className={`fixed bottom-6 z-[999] transition-all duration-500 ${
+          showCallout && !isOpen ? 'agent-callout--visible' : 'agent-callout--hidden'
+        }`}
+        style={{
+          right: 'calc(24px + 64px + 60px)', // 24px margin + 64px button + 60px padding
+          bottom: '24px',
+        }}
+      >
+        <div className="flex items-center gap-4">
+          {/* Text */}
+          <div
+            className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--unfold' : 'agent-callout-text--fold'}`}
+            style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '25px',
+              color: '#ffffff',
+              textAlign: 'right',
+              lineHeight: '1.3',
+            }}
+          >
+            <span style={{ display: 'block' }}>Tem dúvidas?</span>
+            <span style={{ display: 'block' }}>pergunte a</span>
+            <span style={{ display: 'block' }}>nossa IA</span>
+          </div>
+
+          {/* Arrow pointing to agent */}
+          <div className="agent-callout-arrow">
+            <svg
+              width="24"
+              height="40"
+              viewBox="0 0 24 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 0 L12 30 M6 24 L12 30 L18 24"
+                stroke="#ffffff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="agent-arrow-path"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
       {/* Floating Agent Button with Radar Effect */}
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Abrir agente de chat"
-        className="fixed bottom-6 right-6 z-[1000] group"
+        className={`agent-button-container fixed bottom-6 right-6 z-[1000] group ${showCallout && !isOpen ? 'agent-button--pulsing' : ''}`}
         style={{ display: isOpen ? 'none' : 'block' }}
       >
         <div className="relative w-16 h-16 flex items-center justify-center">
@@ -393,7 +478,7 @@ export function AgentButton() {
         </div>
       )}
 
-      {/* CSS para animações do radar */}
+      {/* CSS para animações do radar e callout */}
       <style jsx global>{`
         @keyframes radar-sweep {
           from {
@@ -421,6 +506,140 @@ export function AgentButton() {
           }
           50% {
             opacity: 1;
+          }
+        }
+
+        /* Callout visibility */
+        .agent-callout--visible {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .agent-callout--hidden {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        /* Unfold/Fold animation for text */
+        .agent-callout-text {
+          overflow: hidden;
+          transform-origin: right center;
+        }
+
+        .agent-callout-text--unfold {
+          animation: unfoldText 0.6s ease-out forwards;
+        }
+
+        .agent-callout-text--fold {
+          animation: foldText 0.4s ease-in forwards;
+        }
+
+        @keyframes unfoldText {
+          0% {
+            clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+            opacity: 0;
+            transform: scaleX(0) rotateY(-90deg);
+          }
+          50% {
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+            transform: scaleX(0.5) rotateY(-45deg);
+          }
+          100% {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            opacity: 1;
+            transform: scaleX(1) rotateY(0deg);
+          }
+        }
+
+        @keyframes foldText {
+          0% {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            opacity: 1;
+            transform: scaleX(1) rotateY(0deg);
+          }
+          50% {
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+            transform: scaleX(0.5) rotateY(-45deg);
+          }
+          100% {
+            clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+            opacity: 0;
+            transform: scaleX(0) rotateY(-90deg);
+          }
+        }
+
+        /* Arrow animation - vertical bounce pointing to agent */
+        .agent-callout-arrow {
+          animation: arrowBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes arrowBounce {
+          0%, 100% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(8px);
+          }
+        }
+
+        .agent-arrow-path {
+          stroke-dasharray: 50;
+          stroke-dashoffset: 0;
+          animation: arrowDraw 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowDraw {
+          0%, 100% {
+            stroke-dashoffset: 0;
+            opacity: 1;
+          }
+          50% {
+            stroke-dashoffset: 25;
+            opacity: 0.6;
+          }
+        }
+
+        /* Agent button pulsing red effect */
+        .agent-button--pulsing {
+          animation: agentPulseRed 1.5s ease-in-out infinite;
+        }
+
+        .agent-button--pulsing::before {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border-radius: 50%;
+          border: 2px solid rgba(205, 92, 92, 0.8);
+          animation: agentRadarPulse 2s ease-out infinite;
+        }
+
+        .agent-button--pulsing::after {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border-radius: 50%;
+          border: 2px solid rgba(205, 92, 92, 0.8);
+          animation: agentRadarPulse 2s ease-out infinite;
+          animation-delay: 1s;
+        }
+
+        @keyframes agentPulseRed {
+          0%, 100% {
+            filter: drop-shadow(0 0 8px rgba(205, 92, 92, 0.4));
+          }
+          50% {
+            filter: drop-shadow(0 0 20px rgba(205, 92, 92, 0.8));
+          }
+        }
+
+        @keyframes agentRadarPulse {
+          0% {
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(2);
+            opacity: 0;
           }
         }
       `}</style>
