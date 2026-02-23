@@ -19,7 +19,7 @@ export function Hero() {
       id="hero"
       className="min-h-screen flex items-center justify-center relative pt-24"
       style={{
-        background: `linear-gradient(135deg, rgba(0,0,0,0.78), rgba(26,26,26,0.55)), url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80') center/cover no-repeat`,
+        background: `linear-gradient(135deg, rgba(0,0,0,0.78), rgba(26,26,26,0.55)), url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80') center/cover no-repeat`,
       }}
     >
       <div
@@ -28,7 +28,7 @@ export function Hero() {
       >
         <h1
           className={cn(
-            'font-hero text-[30px] text-white leading-[1.4] mb-6 reveal flex flex-col gap-8',
+            'font-hero text-[40px] text-white leading-[1.4] mb-6 reveal flex flex-col gap-8',
             contentVisible && 'visible'
           )}
         >
