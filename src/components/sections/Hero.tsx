@@ -26,10 +26,10 @@ export function Hero() {
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        poster="https://images.pexels.com/videos/3191572/free-video-3191572.jpg?auto=compress&w=1920"
+        poster="https://images.pexels.com/videos/3209301/free-video-3209301.jpg?auto=compress&w=1920"
       >
         <source
-          src="https://videos.pexels.com/video-files/3191572/3191572-hd_1920_1080_25fps.mp4"
+          src="https://videos.pexels.com/video-files/3209301/3209301-hd_1920_1080_24fps.mp4"
           type="video/mp4"
         />
       </video>
