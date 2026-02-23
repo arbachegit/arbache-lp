@@ -17,14 +17,27 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="min-h-screen flex items-center justify-center relative pt-24"
-      style={{
-        background: `linear-gradient(135deg, rgba(0,0,0,0.78), rgba(26,26,26,0.55)), url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1920&q=80') center/cover no-repeat`,
-      }}
+      className="min-h-screen flex items-center justify-center relative pt-24 overflow-hidden"
     >
+      {/* Video background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        poster="https://images.pexels.com/videos/3191572/free-video-3191572.jpg?auto=compress&w=1920"
+      >
+        <source
+          src="https://videos.pexels.com/video-files/3191572/3191572-hd_1920_1080_25fps.mp4"
+          type="video/mp4"
+        />
+      </video>
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/70 to-neutral-900/60" />
       <div
         ref={contentRef}
-        className="text-center max-w-[900px] px-6"
+        className="text-center max-w-[900px] px-6 relative z-10"
       >
         <h1
           className={cn(
