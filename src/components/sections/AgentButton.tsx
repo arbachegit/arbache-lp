@@ -541,7 +541,7 @@ export function AgentButton() {
         }
 
         .agent-callout-text--fadeout {
-          animation: smoothFadeOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: smoothFadeOut 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes smoothFadeIn {
