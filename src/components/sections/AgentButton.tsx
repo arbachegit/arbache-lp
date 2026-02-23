@@ -531,34 +531,38 @@ export function AgentButton() {
           pointer-events: none;
         }
 
-        /* Fade in/out animation for callout text */
+        /* Smooth fade in/out animation for callout text */
         .agent-callout-text {
-          transition: opacity 0.4s ease;
+          opacity: 0;
         }
 
         .agent-callout-text--fadein {
-          animation: fadeIn 0.5s ease-out forwards;
+          animation: smoothFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .agent-callout-text--fadeout {
-          animation: fadeOut 0.4s ease-in forwards;
+          animation: smoothFadeOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes fadeIn {
+        @keyframes smoothFadeIn {
           0% {
             opacity: 0;
+            transform: translateX(10px);
           }
           100% {
             opacity: 1;
+            transform: translateX(0);
           }
         }
 
-        @keyframes fadeOut {
+        @keyframes smoothFadeOut {
           0% {
             opacity: 1;
+            transform: translateX(0);
           }
           100% {
             opacity: 0;
+            transform: translateX(10px);
           }
         }
 
