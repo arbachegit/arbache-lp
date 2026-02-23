@@ -19,17 +19,17 @@ export function Hero() {
       id="hero"
       className="min-h-screen flex items-center justify-center relative pt-24 overflow-hidden"
     >
-      {/* Video background */}
+      {/* Video background - NYC aerial view at night */}
       <video
         autoPlay
         muted
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        poster="https://images.pexels.com/videos/3209301/free-video-3209301.jpg?auto=compress&w=1920"
+        poster="https://images.pexels.com/videos/5727833/pexels-photo-5727833.jpeg?auto=compress&w=1920"
       >
         <source
-          src="https://videos.pexels.com/video-files/3209301/3209301-hd_1920_1080_24fps.mp4"
+          src="https://videos.pexels.com/video-files/5727833/5727833-hd_1920_1080_30fps.mp4"
           type="video/mp4"
         />
       </video>
