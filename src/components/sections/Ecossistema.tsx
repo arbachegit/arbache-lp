@@ -180,6 +180,30 @@ export function Ecossistema() {
           >
             Uma rede integrada de competências, conexões e propósito
           </p>
+          <div
+            className={cn(
+              'ecosystem__hint-row reveal reveal-delay-2',
+              titleVisible && 'visible'
+            )}
+          >
+            <span className="ecosystem__mouse-hint">
+              <svg
+                className="ecosystem__mouse-icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#A8A8A8"
+                strokeWidth="1.5"
+              >
+                <rect x="6" y="3" width="12" height="18" rx="6" />
+                <line x1="12" y1="7" x2="12" y2="11" className="ecosystem__mouse-scroll" />
+              </svg>
+              <span className="ecosystem__radar-pulse"></span>
+              <span className="ecosystem__radar-pulse ecosystem__radar-pulse--delayed"></span>
+            </span>
+            <span className="ecosystem__hint-text">clique nos produtos no diagrama abaixo, para saber mais</span>
+          </div>
         </div>
 
         {/* Grid: 1/5 painel | 3/5 diagrama | 1/5 vazio */}

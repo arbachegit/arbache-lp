@@ -68,13 +68,17 @@
   font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--muted);
   max-width: 800px;
-  margin: 0 auto 60px;
+  margin: 0 auto 4px;
   line-height: 1.6;
+  text-align: center;
+}
+
+.solucoes__hint-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 8px;
+  margin: 0 auto 60px;
 }
 
 /* Mouse hint animation with radar pulse */
@@ -140,7 +144,7 @@
 .solucoes__hint-text {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 18px;
   color: var(--muted);
   opacity: 0.8;
 }

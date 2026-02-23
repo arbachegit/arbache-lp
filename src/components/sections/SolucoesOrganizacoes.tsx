@@ -274,11 +274,18 @@ export function SolucoesOrganizacoes() {
             )}
           >
             Conheça nosso ecossistema de soluções integradas
+          </p>
+          <div
+            className={cn(
+              'solucoes__hint-row reveal reveal-delay-2',
+              titleVisible && 'visible'
+            )}
+          >
             <span className="solucoes__mouse-hint">
               <svg
                 className="solucoes__mouse-icon"
-                width="28"
-                height="28"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#A8A8A8"
@@ -291,7 +298,7 @@ export function SolucoesOrganizacoes() {
               <span className="solucoes__radar-pulse solucoes__radar-pulse--delayed"></span>
             </span>
             <span className="solucoes__hint-text">clique nos produtos no diagrama abaixo, para saber mais</span>
-          </p>
+          </div>
         </div>
 
         {/* Grid: 1/5 painel | 3/5 diagrama | 1/5 vazio */}
