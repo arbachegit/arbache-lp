@@ -84,12 +84,13 @@
 }
 
 .solucoes__mouse-icon {
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.3s ease;
 }
 
 .solucoes__mouse-hint:hover .solucoes__mouse-icon {
   opacity: 1;
+  stroke: #fff;
 }
 
 .solucoes__mouse-scroll {

@@ -277,11 +277,11 @@ export function SolucoesOrganizacoes() {
             <span className="solucoes__mouse-hint">
               <svg
                 className="solucoes__mouse-icon"
-                width="20"
-                height="20"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="#A8A8A8"
                 strokeWidth="1.5"
               >
                 <rect x="6" y="3" width="12" height="18" rx="6" />
