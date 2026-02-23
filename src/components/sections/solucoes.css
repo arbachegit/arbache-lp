@@ -67,42 +67,61 @@
   font-style: italic;
   font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--muted);
-  max-width: 650px;
+  max-width: 800px;
   margin: 0 auto 60px;
   line-height: 1.6;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
 }
 
-/* Mouse hint animation */
+/* Mouse hint animation with radar pulse */
 .solucoes__mouse-hint {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  animation: mouseHintBounce 2s ease-in-out infinite;
+  justify-content: center;
 }
 
 .solucoes__mouse-icon {
-  opacity: 0.85;
+  opacity: 0.9;
   transition: opacity 0.3s ease;
+  z-index: 2;
 }
 
 .solucoes__mouse-hint:hover .solucoes__mouse-icon {
   opacity: 1;
-  stroke: #fff;
 }
 
 .solucoes__mouse-scroll {
   animation: mouseScroll 1.5s ease-in-out infinite;
 }
 
-@keyframes mouseHintBounce {
-  0%, 100% {
-    transform: translateX(0);
+/* Radar pulse rings */
+.solucoes__radar-pulse {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(205, 92, 92, 0.8);
+  animation: radarPulse 2s ease-out infinite;
+  pointer-events: none;
+}
+
+.solucoes__radar-pulse--delayed {
+  animation-delay: 1s;
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
   }
-  50% {
-    transform: translateX(6px);
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
   }
 }
 
@@ -115,6 +134,15 @@
     transform: translateY(2px);
     opacity: 0.5;
   }
+}
+
+/* Hint text */
+.solucoes__hint-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--muted);
+  opacity: 0.8;
 }
 
 /* ===================================

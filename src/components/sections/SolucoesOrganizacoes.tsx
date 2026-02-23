@@ -277,8 +277,8 @@ export function SolucoesOrganizacoes() {
             <span className="solucoes__mouse-hint">
               <svg
                 className="solucoes__mouse-icon"
-                width="24"
-                height="24"
+                width="28"
+                height="28"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#A8A8A8"
@@ -287,7 +287,10 @@ export function SolucoesOrganizacoes() {
                 <rect x="6" y="3" width="12" height="18" rx="6" />
                 <line x1="12" y1="7" x2="12" y2="11" className="solucoes__mouse-scroll" />
               </svg>
+              <span className="solucoes__radar-pulse"></span>
+              <span className="solucoes__radar-pulse solucoes__radar-pulse--delayed"></span>
             </span>
+            <span className="solucoes__hint-text">clique nos produtos no diagrama abaixo, para saber mais</span>
           </p>
         </div>
 
