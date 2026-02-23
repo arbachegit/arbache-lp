@@ -225,10 +225,12 @@
 .solucoes__hub {
   cursor: pointer;
   outline: none;
+  transform-origin: 400px 300px;
 }
 
 .solucoes__hub--pulse {
   animation: solucoes-hub-pulse 2.8s ease-in-out infinite;
+  transform-origin: 400px 300px;
 }
 
 @keyframes solucoes-hub-pulse {
