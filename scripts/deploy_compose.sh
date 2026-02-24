@@ -12,6 +12,9 @@
 
 set -euo pipefail
 
+# Garantir PATH inclui docker (SSH nao-interativo pode nao ter)
+export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+
 # ============================================
 # CONFIGURACAO
 # ============================================

@@ -115,6 +115,13 @@ jobs:
             backend/docker-compose.prod.yml \
             ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:/var/www/arbache-lp-api/docker-compose.prod.yml
 
+      - name: Ensure GHCR login on server
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
+            "export PATH=/usr/bin:/usr/local/bin:/snap/bin:\$PATH && \
+             echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+
       - name: Execute Deploy
         env:
           IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
