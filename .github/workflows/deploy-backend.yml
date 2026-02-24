@@ -117,13 +117,28 @@ jobs:
             backend/docker-compose.prod.yml \
             ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:/var/www/arbache-lp-api/docker-compose.prod.yml
 
-      - name: Ensure GHCR login on server
+      - name: Find docker on server
+        continue-on-error: true
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'LOGINEOF'
-          source ~/.bashrc 2>/dev/null || source ~/.profile 2>/dev/null || true
-          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          LOGINEOF
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'DIAGEOF'
+          echo "=== whoami ==="
+          whoami
+          echo "=== which docker ==="
+          which docker 2>&1 || true
+          echo "=== find docker ==="
+          find / -name docker -type f 2>/dev/null | head -5 || true
+          echo "=== PATH ==="
+          echo "$PATH"
+          echo "=== snap list ==="
+          snap list 2>/dev/null | grep -i docker || true
+          echo "=== dpkg docker ==="
+          dpkg -l | grep -i docker 2>/dev/null || true
+          echo "=== ls /usr/bin/docker* ==="
+          ls -la /usr/bin/docker* 2>/dev/null || true
+          echo "=== ls /usr/local/bin/docker* ==="
+          ls -la /usr/local/bin/docker* 2>/dev/null || true
+          DIAGEOF
 
       - name: Execute Deploy
         env:
