@@ -70,6 +70,40 @@ const team = [
   },
 ]
 
+function TeamCard({ member, index }: { member: (typeof team)[number]; index: number }) {
+  const { ref, isVisible } = useReveal<HTMLDivElement>()
+  const { Icon } = member
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'bg-white rounded-xl overflow-hidden transition-all duration-500 cursor-pointer border border-[#E0E0E0] reveal',
+        'hover:-translate-y-2 hover:shadow-[0_16px_48px_rgba(0,0,0,0.12)] hover:border-[#B9B9B9]',
+        isVisible && 'visible',
+        index > 0 && `reveal-delay-${index}`
+      )}
+    >
+      <div
+        className="h-[260px] flex items-center justify-center text-[#E6E6E6]"
+        style={{ background: member.gradient }}
+      >
+        <div className="transform transition-transform duration-500 hover:scale-110">
+          <Icon />
+        </div>
+      </div>
+      <div className="p-6 bg-white">
+        <h3 className="font-section text-[1.15rem] mb-1 text-[#1a1a1a]">{member.name}</h3>
+        <div className="font-[Montserrat] text-[0.65rem] tracking-[0.1em] uppercase text-[#808080] mb-3">
+          {member.role}
+        </div>
+        <p className="font-tagline text-[0.9rem] text-[#555] leading-relaxed">
+          &ldquo;{member.quote}&rdquo;
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function QuemSomos() {
   const { ref: titleRef, isVisible: titleVisible } = useReveal<HTMLDivElement>()
 
@@ -108,40 +142,9 @@ export function QuemSomos() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {team.map((member, index) => {
-            const { ref, isVisible } = useReveal<HTMLDivElement>()
-            const { Icon } = member
-            return (
-              <div
-                key={member.name}
-                ref={ref}
-                className={cn(
-                  'bg-white rounded-xl overflow-hidden transition-all duration-500 cursor-pointer border border-[#E0E0E0] reveal',
-                  'hover:-translate-y-2 hover:shadow-[0_16px_48px_rgba(0,0,0,0.12)] hover:border-[#B9B9B9]',
-                  isVisible && 'visible',
-                  index > 0 && `reveal-delay-${index}`
-                )}
-              >
-                <div
-                  className="h-[260px] flex items-center justify-center text-[#E6E6E6]"
-                  style={{ background: member.gradient }}
-                >
-                  <div className="transform transition-transform duration-500 hover:scale-110">
-                    <Icon />
-                  </div>
-                </div>
-                <div className="p-6 bg-white">
-                  <h3 className="font-section text-[1.15rem] mb-1 text-[#1a1a1a]">{member.name}</h3>
-                  <div className="font-[Montserrat] text-[0.65rem] tracking-[0.1em] uppercase text-[#808080] mb-3">
-                    {member.role}
-                  </div>
-                  <p className="font-tagline text-[0.9rem] text-[#555] leading-relaxed">
-                    &ldquo;{member.quote}&rdquo;
-                  </p>
-                </div>
-              </div>
-            )
-          })}
+          {team.map((member, index) => (
+            <TeamCard key={member.name} member={member} index={index} />
+          ))}
         </div>
       </div>
     </section>

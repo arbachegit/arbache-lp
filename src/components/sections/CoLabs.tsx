@@ -85,6 +85,31 @@ const colabs = [
   },
 ]
 
+function ColabCard({ colab, index }: { colab: (typeof colabs)[number]; index: number }) {
+  const { ref, isVisible } = useReveal<HTMLDivElement>()
+  const { Icon } = colab
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'bg-[#1E1E22] border border-[#2A2A2E] rounded-xl p-8 flex gap-5 items-start reveal',
+        'transition-all duration-500 cursor-pointer',
+        'hover:bg-[#252529] hover:border-[#3A3A3E] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]',
+        isVisible && 'visible',
+        index > 0 && `reveal-delay-${Math.min(index, 3)}`
+      )}
+    >
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 bg-[#2A2A2E] text-[#E6E6E6] border border-[#3A3A3E]">
+        <Icon />
+      </div>
+      <div className="text-left">
+        <h3 className="font-section text-[1rem] mb-1.5 text-[#E6E6E6]">{colab.name}</h3>
+        <p className="text-[0.85rem] text-[#808080] leading-relaxed">{colab.desc}</p>
+      </div>
+    </div>
+  )
+}
+
 export function CoLabs() {
   const { ref: titleRef, isVisible: titleVisible } = useReveal<HTMLDivElement>()
 
@@ -123,31 +148,9 @@ export function CoLabs() {
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
-          {colabs.map((colab, index) => {
-            const { ref, isVisible } = useReveal<HTMLDivElement>()
-            const { Icon } = colab
-            return (
-              <div
-                key={colab.name}
-                ref={ref}
-                className={cn(
-                  'bg-[#1E1E22] border border-[#2A2A2E] rounded-xl p-8 flex gap-5 items-start reveal',
-                  'transition-all duration-500 cursor-pointer',
-                  'hover:bg-[#252529] hover:border-[#3A3A3E] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]',
-                  isVisible && 'visible',
-                  index > 0 && `reveal-delay-${Math.min(index, 3)}`
-                )}
-              >
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 bg-[#2A2A2E] text-[#E6E6E6] border border-[#3A3A3E]">
-                  <Icon />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-section text-[1rem] mb-1.5 text-[#E6E6E6]">{colab.name}</h3>
-                  <p className="text-[0.85rem] text-[#808080] leading-relaxed">{colab.desc}</p>
-                </div>
-              </div>
-            )
-          })}
+          {colabs.map((colab, index) => (
+            <ColabCard key={colab.name} colab={colab} index={index} />
+          ))}
         </div>
       </div>
     </section>
