@@ -178,16 +178,18 @@ export function AgentButton() {
     setIsTyping(true)
 
     try {
-      // API no mesmo domínio
-      const response = await fetch('/api/chat', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
+      const response = await fetch(`${apiUrl}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           message: userMessage,
-          section: currentSection ?? undefined,
-          sectionContext: currentSection ? sectionInfo.context : undefined,
+          ...(currentSection && {
+            section: currentSection,
+            sectionContext: sectionInfo.context,
+          }),
         }),
       })
 

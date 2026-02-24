@@ -1,9 +1,14 @@
-name: Deploy to DigitalOcean
+name: Deploy Frontend to DigitalOcean
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+# CRITICO: Cancela deploys anteriores pendentes
+concurrency:
+  group: deploy-frontend-production
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '20'
@@ -16,6 +21,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set variables
+        id: vars
+        run: |
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:7}"
+          echo "sha=${SHA}" >> $GITHUB_OUTPUT
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "============================================"
+          echo "DEPLOY SHA:   ${SHA}"
+          echo "SHORT SHA:    ${SHORT_SHA}"
+          echo "============================================"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -31,7 +48,15 @@ jobs:
 
       - name: Generate version.json
         run: |
-          echo "{\"sha\": \"${{ github.sha }}\", \"shortSha\": \"$(echo ${{ github.sha }} | cut -c1-7)\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"project\": \"arbache-lp\", \"ref\": \"${{ github.ref_name }}\"}" > ${{ env.BUILD_OUTPUT }}/version.json
+          cat > ${{ env.BUILD_OUTPUT }}/version.json << EOF
+          {
+            "sha": "${{ steps.vars.outputs.sha }}",
+            "shortSha": "${{ steps.vars.outputs.short_sha }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "project": "arbache-lp",
+            "ref": "${{ github.ref_name }}"
+          }
+          EOF
           cat ${{ env.BUILD_OUTPUT }}/version.json
 
       - name: Setup SSH
@@ -43,40 +68,37 @@ jobs:
 
       - name: Deploy via rsync
         run: |
-          SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ${{ env.BUILD_OUTPUT }}/ \
-            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:/var/www/arbache-lp/releases/sha-$SHA_SHORT/
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:/var/www/arbache-lp/releases/sha-${{ steps.vars.outputs.short_sha }}/
 
       - name: Switch symlink (atomic deploy)
         run: |
-          SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
-            "ln -sfn /var/www/arbache-lp/releases/sha-$SHA_SHORT /var/www/arbache-lp/current"
+            "ln -sfn /var/www/arbache-lp/releases/sha-${{ steps.vars.outputs.short_sha }} /var/www/arbache-lp/current"
 
       - name: Verify deployment
-        continue-on-error: true
         run: |
           sleep 3
-          echo "Checking deployment at http://${{ secrets.DO_HOST }}/version.json"
-          if curl -sf http://${{ secrets.DO_HOST }}/version.json > /tmp/version.json 2>/dev/null; then
-            DEPLOYED_SHA=$(jq -r '.shortSha' /tmp/version.json)
-            EXPECTED_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-            if [ "$DEPLOYED_SHA" = "$EXPECTED_SHA" ]; then
-              echo "✅ Deployment verified: $DEPLOYED_SHA"
-            else
-              echo "⚠️ SHA mismatch - Expected: $EXPECTED_SHA, Got: $DEPLOYED_SHA"
-              echo "Files were deployed, but version.json may be cached"
-            fi
+          echo "Verificando deploy em https://arbache.com/version.json"
+
+          DEPLOYED=$(ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
+            "cat /var/www/arbache-lp/current/version.json 2>/dev/null" || echo "{}")
+
+          DEPLOYED_SHA=$(echo "$DEPLOYED" | jq -r '.shortSha // empty')
+          EXPECTED_SHA="${{ steps.vars.outputs.short_sha }}"
+
+          echo "Esperado: ${EXPECTED_SHA}"
+          echo "Deployed: ${DEPLOYED_SHA}"
+
+          if [ "$DEPLOYED_SHA" = "$EXPECTED_SHA" ]; then
+            echo "Deploy verificado com sucesso: ${DEPLOYED_SHA}"
           else
-            echo "⚠️ Could not fetch version.json - Nginx may need configuration"
-            echo "Deploy completed: files at /var/www/arbache-lp/current/"
-            # Verify files exist on server
-            ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-              ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
-              "ls -la /var/www/arbache-lp/current/version.json 2>/dev/null || echo 'version.json exists in release'"
+            echo "MISMATCH! Esperado=${EXPECTED_SHA} Deployed=${DEPLOYED_SHA}"
+            exit 1
           fi
 
       - name: Cleanup old releases
@@ -86,3 +108,13 @@ jobs:
             "cd /var/www/arbache-lp/releases && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf"
         env:
           KEEP_RELEASES: ${{ env.KEEP_RELEASES }}
+
+      - name: Deploy summary
+        if: always()
+        run: |
+          echo "============================================"
+          echo "FRONTEND DEPLOY"
+          echo "============================================"
+          echo "SHA:    ${{ steps.vars.outputs.short_sha }}"
+          echo "Time:   $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================"

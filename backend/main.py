@@ -335,6 +335,16 @@ class HealthResponseV1(BaseModel):
     services: dict[str, bool]
 
 
+class VersionResponseV1(BaseModel):
+    """Response do endpoint /version - v1."""
+    model_config = ConfigDict(strict=True)
+
+    sha: str
+    version: str
+    service: str
+    timestamp: str
+
+
 # ===================================
 # FUNÇÕES AUXILIARES
 # ===================================
@@ -539,14 +549,28 @@ app.add_middleware(
 @app.get("/health", response_model=HealthResponseV1)
 async def health_check():
     """Health check endpoint."""
+    app_version = os.getenv("APP_VERSION", "dev")
     return HealthResponseV1(
         status="healthy",
-        version="1.0.0",
+        version=app_version,
         services={
             "perplexity": Config.has_perplexity(),
             "anthropic": Config.has_anthropic(),
             "openai": Config.has_openai(),
         }
+    )
+
+
+@app.get("/version", response_model=VersionResponseV1)
+async def version():
+    """Endpoint de versao para validacao de deploy."""
+    app_version = os.getenv("APP_VERSION", "dev")
+    clean_sha = app_version.replace("sha-", "")
+    return VersionResponseV1(
+        sha=clean_sha,
+        version=app_version,
+        service="arbache-api",
+        timestamp=datetime.utcnow().isoformat() + "Z",
     )
 
 

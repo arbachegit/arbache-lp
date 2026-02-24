@@ -1,0 +1,38 @@
+# docker-compose.prod.yml - Producao com Tags SHA Imutaveis
+#
+# VARIAVEIS OBRIGATORIAS:
+#   IMAGE_NAME  - Nome da imagem (ex: ghcr.io/arbachegit/arbache-api)
+#   IMAGE_TAG   - Tag SHA (ex: sha-2f3a1b4c5d6e)
+#
+# REGRAS:
+#   1. NUNCA usar tag "latest"
+#   2. NUNCA usar "build:" em producao
+#   3. SEMPRE pull_policy: always
+
+services:
+  arbache-api:
+    image: ${IMAGE_NAME:?IMAGE_NAME obrigatorio}:${IMAGE_TAG:?IMAGE_TAG obrigatorio}
+    container_name: arbache-lp-api
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - APP_VERSION=${IMAGE_TAG}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      com.arbache.environment: "production"
+      com.arbache.git_sha: "${IMAGE_TAG}"
