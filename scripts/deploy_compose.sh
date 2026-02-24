@@ -10,11 +10,10 @@
 #
 # USO: IMAGE_NAME=... IMAGE_TAG=... ./deploy_compose.sh
 
-set -euo pipefail
-
-# Garantir PATH inclui docker (SSH nao-interativo pode nao ter)
-source ~/.bashrc 2>/dev/null || source ~/.profile 2>/dev/null || true
+## Garantir PATH inclui docker (antes do set -e)
 export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+
+set -euo pipefail
 
 # ============================================
 # CONFIGURACAO
