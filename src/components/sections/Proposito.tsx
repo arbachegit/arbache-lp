@@ -24,13 +24,13 @@ const VisaoIcon = () => (
 )
 
 const valores = [
-  { title: 'Excelência', desc: 'Padrões elevados em conteúdo acadêmico, experiência de mercado e parcerias internacionais.' },
-  { title: 'Personalização', desc: 'Experiências de aprendizagem e iniciativas educacionais inovadoras e sob medida.' },
-  { title: 'Consciência Ética', desc: 'Relações sólidas baseadas em valores éticos e compartilhamento de propósito.' },
-  { title: 'Valor Compartilhado', desc: 'Parceiros na formação de líderes responsáveis com compromisso social.' },
-  { title: 'Inovação com Propósito', desc: 'Tecnologia e IA para gerar impacto real e sustentável.' },
-  { title: 'Conexão com o Mercado', desc: 'Integração com executivos e desafios reais dos negócios.' },
-  { title: 'Aprendizado Contínuo', desc: 'Desenvolvimento permanente como base da alta performance.' },
+  { title: 'Excelência', desc: 'Padrões elevados em conteúdo acadêmico, experiência de mercado e parcerias internacionais.', gradient: 'linear-gradient(135deg, #1e1e1e, #2a2a2a)' },
+  { title: 'Personalização', desc: 'Experiências de aprendizagem e iniciativas educacionais inovadoras e sob medida.', gradient: 'linear-gradient(135deg, #222222, #2e2e2e)' },
+  { title: 'Consciência Ética', desc: 'Relações sólidas baseadas em valores éticos e compartilhamento de propósito.', gradient: 'linear-gradient(135deg, #252525, #323232)' },
+  { title: 'Valor Compartilhado', desc: 'Parceiros na formação de líderes responsáveis com compromisso social.', gradient: 'linear-gradient(135deg, #1c1c1c, #282828)' },
+  { title: 'Inovação com Propósito', desc: 'Tecnologia e IA para gerar impacto real e sustentável.', gradient: 'linear-gradient(135deg, #202020, #2c2c2c)' },
+  { title: 'Conexão com o Mercado', desc: 'Integração com executivos e desafios reais dos negócios.', gradient: 'linear-gradient(135deg, #242424, #303030)' },
+  { title: 'Aprendizado Contínuo', desc: 'Desenvolvimento permanente como base da alta performance.', gradient: 'linear-gradient(135deg, #1e1e1e, #2a2a2a)' },
 ]
 
 function Counter({ target, label, isYear = false }: { target: number; label: string; isYear?: boolean }) {
@@ -175,10 +175,20 @@ export function Proposito() {
           {valores.map((valor) => (
             <div
               key={valor.title}
-              className="bg-white/6 rounded-lg p-6 border-l-[3px] border-[#E6E6E6] text-left"
+              className="rounded-xl p-6 border-l-[3px] border-[#555] text-left cursor-pointer transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.03] hover:border-[#888]"
+              style={{
+                background: valor.gradient,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.03)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)'
+              }}
             >
               <strong className="text-[#E6E6E6]">{valor.title}</strong>
-              <span className="text-white/80"> — {valor.desc}</span>
+              <span className="text-white/70"> — {valor.desc}</span>
             </div>
           ))}
         </div>
