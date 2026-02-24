@@ -117,28 +117,32 @@ jobs:
             backend/docker-compose.prod.yml \
             ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}:/var/www/arbache-lp-api/docker-compose.prod.yml
 
-      - name: Find docker on server
-        continue-on-error: true
+      - name: Install Docker on server (idempotent)
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'DIAGEOF'
-          echo "=== whoami ==="
-          whoami
-          echo "=== which docker ==="
-          which docker 2>&1 || true
-          echo "=== find docker ==="
-          find / -name docker -type f 2>/dev/null | head -5 || true
-          echo "=== PATH ==="
-          echo "$PATH"
-          echo "=== snap list ==="
-          snap list 2>/dev/null | grep -i docker || true
-          echo "=== dpkg docker ==="
-          dpkg -l | grep -i docker 2>/dev/null || true
-          echo "=== ls /usr/bin/docker* ==="
-          ls -la /usr/bin/docker* 2>/dev/null || true
-          echo "=== ls /usr/local/bin/docker* ==="
-          ls -la /usr/local/bin/docker* 2>/dev/null || true
-          DIAGEOF
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'DOCKEREOF'
+          if command -v docker &> /dev/null; then
+            echo "Docker already installed: $(docker --version)"
+          else
+            echo "Installing Docker..."
+            curl -fsSL https://get.docker.com | sh
+            systemctl enable docker
+            systemctl start docker
+            echo "Docker installed: $(docker --version)"
+          fi
+          # Ensure docker compose plugin is available
+          if ! docker compose version &> /dev/null; then
+            echo "Installing docker-compose-plugin..."
+            apt-get update -qq && apt-get install -y -qq docker-compose-plugin
+          fi
+          echo "Docker Compose: $(docker compose version)"
+          DOCKEREOF
+
+      - name: Login to GHCR on server
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
+            "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
 
       - name: Execute Deploy
         env:
@@ -151,14 +155,13 @@ jobs:
 
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
             ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << DEPLOYEOF
-          source ~/.bashrc 2>/dev/null || source ~/.profile 2>/dev/null || true
           cd /var/www/arbache-lp-api
           chmod +x deploy_compose.sh
-          export IMAGE_NAME=${IMAGE_NAME}
-          export IMAGE_TAG=${IMAGE_TAG}
-          export PERPLEXITY_API_KEY='${{ secrets.PERPLEXITY_API_KEY }}'
-          export ANTHROPIC_API_KEY='${{ secrets.ANTHROPIC_API_KEY }}'
-          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
+          IMAGE_NAME=${IMAGE_NAME} \
+          IMAGE_TAG=${IMAGE_TAG} \
+          PERPLEXITY_API_KEY='${{ secrets.PERPLEXITY_API_KEY }}' \
+          ANTHROPIC_API_KEY='${{ secrets.ANTHROPIC_API_KEY }}' \
+          OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' \
           ./deploy_compose.sh
           DEPLOYEOF
 
