@@ -4,6 +4,25 @@ import { useReveal } from '@/hooks/useReveal'
 import { useCounterAnimation } from '@/hooks/useCounterAnimation'
 import { cn } from '@/lib/utils'
 
+// Icons for Missão and Visão
+const MissaoIcon = () => (
+  <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+    <circle cx="14" cy="14" r="12" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <circle cx="14" cy="14" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <circle cx="14" cy="14" r="2.5" fill="currentColor" />
+    <path d="M14 2v4M14 22v4M2 14h4M22 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+)
+
+const VisaoIcon = () => (
+  <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+    <path d="M2 14s4.5-9 12-9 12 9 12 9-4.5 9-12 9-12-9-12-9z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <circle cx="14" cy="14" r="4.5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <circle cx="14" cy="14" r="1.8" fill="currentColor" />
+    <path d="M14 5v2M14 21v2" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+  </svg>
+)
+
 const valores = [
   { title: 'Excelência', desc: 'Padrões elevados em conteúdo acadêmico, experiência de mercado e parcerias internacionais.' },
   { title: 'Personalização', desc: 'Experiências de aprendizagem e iniciativas educacionais inovadoras e sob medida.' },
@@ -86,8 +105,25 @@ export function Proposito() {
             mvvVisible && 'visible'
           )}
         >
-          <div className="bg-white/8 rounded-xl p-9 border border-white/10 backdrop-blur-[4px]">
-            <h3 className="font-section text-[1.3rem] mb-3 text-[#E6E6E6]">Missão</h3>
+          <div
+            className="rounded-2xl p-9 cursor-pointer transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.02]"
+            style={{
+              background: '#1a1a1a',
+              boxShadow: '8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(255,255,255,0.04)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '12px 12px 30px rgba(0,0,0,0.8), -6px -6px 16px rgba(255,255,255,0.06), 0 0 40px rgba(255,255,255,0.03)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(255,255,255,0.04)'
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-[#E6E6E6]">
+                <MissaoIcon />
+              </div>
+              <h3 className="font-section text-[1.3rem] text-[#E6E6E6]">Missão</h3>
+            </div>
             <p className="text-white/80 text-[0.95rem]">
               Promover educação de excelência e personalizada para negócios, lideranças e talentos,
               integrando rigor acadêmico, práticas de mercado, inovação tecnológica, conexões e
@@ -95,8 +131,25 @@ export function Proposito() {
               desempenho.
             </p>
           </div>
-          <div className="bg-white/8 rounded-xl p-9 border border-white/10 backdrop-blur-[4px]">
-            <h3 className="font-section text-[1.3rem] mb-3 text-[#E6E6E6]">Visão</h3>
+          <div
+            className="rounded-2xl p-9 cursor-pointer transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.02]"
+            style={{
+              background: '#1a1a1a',
+              boxShadow: '8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(255,255,255,0.04)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '12px 12px 30px rgba(0,0,0,0.8), -6px -6px 16px rgba(255,255,255,0.06), 0 0 40px rgba(255,255,255,0.03)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(255,255,255,0.04)'
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-[#E6E6E6]">
+                <VisaoIcon />
+              </div>
+              <h3 className="font-section text-[1.3rem] text-[#E6E6E6]">Visão</h3>
+            </div>
             <p className="text-white/80 text-[0.95rem]">
               Ser referência em educação em negócios, reconhecida pela excelência e personalização
               na formação de lideranças e talentos conscientes e inovadores, que geram resultados de
