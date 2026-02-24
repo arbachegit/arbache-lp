@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'backend/**'
+      - 'scripts/deploy_compose.sh'
+      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
 # CRITICO: Cancela deploys anteriores pendentes
@@ -118,9 +120,10 @@ jobs:
       - name: Ensure GHCR login on server
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
-            "export PATH=/usr/bin:/usr/local/bin:/snap/bin:\$PATH && \
-             echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << 'LOGINEOF'
+          source ~/.bashrc 2>/dev/null || source ~/.profile 2>/dev/null || true
+          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          LOGINEOF
 
       - name: Execute Deploy
         env:
@@ -132,15 +135,17 @@ jobs:
           echo "============================================"
 
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} \
-            "cd /var/www/arbache-lp-api && \
-             chmod +x deploy_compose.sh && \
-             IMAGE_NAME=${IMAGE_NAME} \
-             IMAGE_TAG=${IMAGE_TAG} \
-             PERPLEXITY_API_KEY='${{ secrets.PERPLEXITY_API_KEY }}' \
-             ANTHROPIC_API_KEY='${{ secrets.ANTHROPIC_API_KEY }}' \
-             OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}' \
-             ./deploy_compose.sh"
+            ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} << DEPLOYEOF
+          source ~/.bashrc 2>/dev/null || source ~/.profile 2>/dev/null || true
+          cd /var/www/arbache-lp-api
+          chmod +x deploy_compose.sh
+          export IMAGE_NAME=${IMAGE_NAME}
+          export IMAGE_TAG=${IMAGE_TAG}
+          export PERPLEXITY_API_KEY='${{ secrets.PERPLEXITY_API_KEY }}'
+          export ANTHROPIC_API_KEY='${{ secrets.ANTHROPIC_API_KEY }}'
+          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
+          ./deploy_compose.sh
+          DEPLOYEOF
 
       - name: Verify deployment
         run: |
