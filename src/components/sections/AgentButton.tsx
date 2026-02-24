@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
+import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from 'react'
 
 // ===================================
 // SECTION DATA MAP
@@ -9,47 +9,102 @@ import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 interface SectionInfo {
   callout: [string, string, string]
   context: string
+  title: string
 }
 
 const SECTION_DATA: Record<string, SectionInfo> = {
   hero: {
     callout: ['Tem dúvidas?', 'Pergunte a', 'nossa IA'],
     context: 'Página inicial',
+    title: 'Hero',
   },
   proposito: {
     callout: ['Nosso Propósito', 'Pergunte a', 'nossa IA'],
     context: 'Missão, visão e valores',
+    title: 'Propósito',
   },
   'quem-somos': {
     callout: ['Quem Somos', 'Pergunte a', 'nossa IA'],
     context: 'Equipe Arbache',
+    title: 'Quem Somos',
   },
   'nosso-ecossistema': {
     callout: ['Nosso Ecossistema', 'Pergunte a', 'nossa IA'],
     context: 'Ecossistema de soluções',
+    title: 'Nosso Ecossistema',
   },
   'solucoes-org': {
     callout: ['Nossas Soluções', 'Pergunte a', 'nossa IA'],
     context: 'Programas para organizações',
+    title: 'Soluções para Organizações',
   },
   colabs: {
     callout: ['Nossos Parceiros', 'Pergunte a', 'nossa IA'],
     context: 'Co-Labs parceiros',
+    title: 'Co-Labs',
   },
   esg: {
     callout: ['Nosso ESG', 'Pergunte a', 'nossa IA'],
     context: 'Sustentabilidade',
+    title: 'ESG',
   },
   contato: {
     callout: ['Dúvidas?', 'Pergunte a', 'nossa IA'],
     context: 'Contato',
+    title: 'Contato',
   },
 }
 
 const DEFAULT_SECTION: SectionInfo = {
   callout: ['Tem dúvidas?', 'Pergunte a', 'nossa IA'],
   context: 'Página inicial',
+  title: 'Início',
 }
+
+// ===================================
+// SECTION CONTEXT CAPTURE
+// ===================================
+
+interface SectionContextPayload {
+  sectionId: string
+  sectionTitle: string
+  route: string
+  timestamp: string
+  filters: Record<string, unknown>
+  visibleContent: string
+  dataPreview: Record<string, unknown>
+  userAction: 'section_activated' | 'section_changed'
+}
+
+function captureSectionContext(sectionId: string, action: 'section_activated' | 'section_changed'): SectionContextPayload {
+  const info = SECTION_DATA[sectionId] ?? DEFAULT_SECTION
+  const el = document.getElementById(sectionId)
+
+  // Extract visible text (first 500 chars of section content)
+  let visibleContent = ''
+  if (el) {
+    const headings = el.querySelectorAll('h1, h2, h3, p')
+    const texts: string[] = []
+    headings.forEach(node => {
+      const text = node.textContent?.trim()
+      if (text) texts.push(text)
+    })
+    visibleContent = texts.join(' | ').slice(0, 500)
+  }
+
+  return {
+    sectionId,
+    sectionTitle: info.title,
+    route: typeof window !== 'undefined' ? window.location.pathname : '/',
+    timestamp: new Date().toISOString(),
+    filters: {},
+    visibleContent,
+    dataPreview: { context: info.context },
+    userAction: action,
+  }
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
 
 // Agent icon - minimal chat bubble (without dots)
 const AgentIcon = ({ isPulsing = false }: { isPulsing?: boolean }) => (
@@ -100,8 +155,10 @@ export function AgentButton() {
   const [showCallout, setShowCallout] = useState(false)
   const [currentSection, setCurrentSection] = useState<string | null>(null)
   const [phraseKey, setPhraseKey] = useState(0)
+  const [contextError, setContextError] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const prevSectionRef = useRef<string | null>(null)
+  const lastContextRef = useRef<SectionContextPayload | null>(null)
 
   // reducedMotion via useSyncExternalStore (no setState-in-effect)
   const reducedMotion = useSyncExternalStore(
@@ -116,6 +173,47 @@ export function AgentButton() {
 
   // Current section info for callout text and context
   const sectionInfo = currentSection ? (SECTION_DATA[currentSection] ?? DEFAULT_SECTION) : DEFAULT_SECTION
+
+  // Send section context to agent (proactive, on section change)
+  const sendContextToAgent = useCallback(async (payload: SectionContextPayload) => {
+    lastContextRef.current = payload
+    setContextError(false)
+
+    console.log('[AgentContext] Section activated:', {
+      sectionId: payload.sectionId,
+      sectionTitle: payload.sectionTitle,
+      timestamp: payload.timestamp,
+      visibleContent: payload.visibleContent.slice(0, 100) + '...',
+    })
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000)
+
+      const response = await fetch(`${API_URL}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          message: `[CONTEXT] Usuário navegou para: ${payload.sectionTitle}`,
+          section: payload.sectionId,
+          sectionContext: `${payload.sectionTitle} — ${payload.visibleContent.slice(0, 180)}`,
+        }),
+      })
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        throw new Error(`Context send failed: ${response.status}`)
+      }
+
+      console.log('[AgentContext] Context sent successfully for:', payload.sectionId)
+    } catch (err) {
+      // Context send is best-effort — log but don't block UI
+      console.warn('[AgentContext] Failed to send context:', err)
+      setContextError(true)
+    }
+  }, [])
 
   // Section detection via scroll handler — checks every frame which section
   // contains the viewport midpoint. O(8) per scroll = trivially fast.
@@ -143,12 +241,20 @@ export function AgentButton() {
       }
 
       if (found && found !== prevSectionRef.current) {
+        const isFirstActivation = prevSectionRef.current === null
         prevSectionRef.current = found
         if (timerRef.current) clearTimeout(timerRef.current)
 
         setCurrentSection(found)
         setPhraseKey(k => k + 1)
         setShowCallout(true)
+
+        // Capture and send context to agent
+        const payload = captureSectionContext(
+          found,
+          isFirstActivation ? 'section_activated' : 'section_changed',
+        )
+        sendContextToAgent(payload)
 
         // Auto-hide after 5s
         timerRef.current = setTimeout(() => {
@@ -165,7 +271,7 @@ export function AgentButton() {
       window.removeEventListener('scroll', detectSection)
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [isOpen])
+  }, [isOpen, sendContextToAgent])
 
   const handleSend = async () => {
     if (!message.trim()) return
@@ -177,18 +283,26 @@ export function AgentButton() {
     setMessage('')
     setIsTyping(true)
 
+    // Build enriched sectionContext from last captured payload
+    const ctx = lastContextRef.current
+    const enrichedContext = ctx
+      ? `${ctx.sectionTitle} — ${ctx.visibleContent.slice(0, 180)}`
+      : sectionInfo.context
+
+    console.log('[AgentChat] Sending message with context:', {
+      section: currentSection,
+      sectionContext: enrichedContext,
+    })
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
-      const response = await fetch(`${apiUrl}/chat`, {
+      const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
           ...(currentSection && {
             section: currentSection,
-            sectionContext: sectionInfo.context,
+            sectionContext: enrichedContext,
           }),
         }),
       })
@@ -207,7 +321,7 @@ export function AgentButton() {
         }
       ])
     } catch (error) {
-      console.error('Chat error:', error)
+      console.error('[AgentChat] Error:', error)
       setMessages(prev => [
         ...prev,
         {
@@ -485,7 +599,19 @@ export function AgentButton() {
               </div>
               <div>
                 <h3 className="text-white font-medium text-sm">Assistente Arbache</h3>
-                <p className="text-gray-500 text-xs">Online</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-gray-500 text-xs">Online</p>
+                  {currentSection && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2a2a30] text-gray-400">
+                      {sectionInfo.title}
+                    </span>
+                  )}
+                  {contextError && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-900/30 text-red-400">
+                      ctx err
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             <button
