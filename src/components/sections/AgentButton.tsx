@@ -77,12 +77,13 @@ export function AgentButton() {
       // Fade in: small delay to avoid flickering
       fadeTimeoutRef.current = setTimeout(() => {
         setShowCallout(true)
-      }, 100)
+      }, 150)
     } else {
-      // Fade out: longer delay so animation completes regardless of scroll speed
+      // Fade out: muito mais lento para UX suave
+      // Aguarda 4.5s para garantir que a animação de 4s complete
       fadeTimeoutRef.current = setTimeout(() => {
         setShowCallout(false)
-      }, 2500) // Wait for fade out animation to complete
+      }, 4500)
     }
 
     return () => {
@@ -205,7 +206,7 @@ export function AgentButton() {
           </div>
 
           {/* Horizontal arrow pointing to agent */}
-          <div className="agent-callout-arrow">
+          <div className={`agent-callout-arrow ${showCallout && !isOpen ? 'agent-callout-arrow--fadein' : 'agent-callout-arrow--fadeout'}`}>
             <svg
               width="40"
               height="24"
@@ -553,15 +554,17 @@ export function AgentButton() {
           }
         }
 
-        /* Callout visibility */
+        /* Callout visibility - transição suave do container */
         .agent-callout--visible {
           opacity: 1;
           pointer-events: auto;
+          transition: opacity 0.5s ease-out;
         }
 
         .agent-callout--hidden {
           opacity: 0;
           pointer-events: none;
+          transition: opacity 1.5s ease-in-out;
         }
 
         /* Smooth fade in/out animation for callout text */
@@ -574,7 +577,7 @@ export function AgentButton() {
         }
 
         .agent-callout-text--fadeout {
-          animation: smoothFadeOut 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+          animation: smoothFadeOut 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes smoothFadeIn {
@@ -592,6 +595,14 @@ export function AgentButton() {
           0% {
             opacity: 1;
             transform: translateX(0);
+          }
+          30% {
+            opacity: 0.9;
+            transform: translateX(2px);
+          }
+          60% {
+            opacity: 0.6;
+            transform: translateX(6px);
           }
           100% {
             opacity: 0;
@@ -613,7 +624,40 @@ export function AgentButton() {
 
         /* Arrow animation - horizontal bounce pointing to agent */
         .agent-callout-arrow {
-          animation: arrowBounceHorizontal 1s ease-in-out infinite;
+          opacity: 0;
+        }
+
+        .agent-callout-arrow--fadein {
+          opacity: 1;
+          animation: arrowBounceHorizontal 1s ease-in-out infinite, arrowFadeIn 1.5s ease-out forwards;
+        }
+
+        .agent-callout-arrow--fadeout {
+          animation: arrowFadeOut 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes arrowFadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        @keyframes arrowFadeOut {
+          0% {
+            opacity: 1;
+          }
+          30% {
+            opacity: 0.9;
+          }
+          60% {
+            opacity: 0.5;
+          }
+          100% {
+            opacity: 0;
+          }
         }
 
         @keyframes arrowBounceHorizontal {
