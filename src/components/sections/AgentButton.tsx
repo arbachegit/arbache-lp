@@ -100,9 +100,10 @@ export function AgentButton() {
   const [showCallout, setShowCallout] = useState(false)
   const [currentSection, setCurrentSection] = useState<string | null>(null)
   const [phraseKey, setPhraseKey] = useState(0)
-  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
   const prevSectionRef = useRef<string | null>(null)
-  const autoHideRef = useRef<NodeJS.Timeout | null>(null)
+  const isVisibleRef = useRef(false)
+  const sectionRatiosRef = useRef<Map<string, number>>(new Map())
 
   // reducedMotion via useSyncExternalStore (no setState-in-effect)
   const reducedMotion = useSyncExternalStore(
@@ -118,65 +119,88 @@ export function AgentButton() {
   // Current section info for callout text and context
   const sectionInfo = currentSection ? (SECTION_DATA[currentSection] ?? DEFAULT_SECTION) : DEFAULT_SECTION
 
-  // Detect which section is at 75% of viewport (where the button sits)
-  const detectSection = useCallback(() => {
-    if (isOpen) return
+  // Show callout for a given section with fade-out → pause → fade-in
+  const triggerCallout = useCallback((sectionId: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current)
 
-    const sections = document.querySelectorAll('section[id]')
-    const checkY = window.innerHeight * 0.75
+    const reveal = () => {
+      setCurrentSection(sectionId)
+      setPhraseKey(k => k + 1)
+      setShowCallout(true)
+      isVisibleRef.current = true
 
-    let found: string | null = null
-    sections.forEach((section) => {
-      const rect = section.getBoundingClientRect()
-      if (rect.top <= checkY && rect.bottom >= checkY) {
-        found = section.id
-      }
-    })
-
-    if (found && found !== prevSectionRef.current) {
-      prevSectionRef.current = found
-
-      // Clear any pending timers
-      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
-      if (autoHideRef.current) clearTimeout(autoHideRef.current)
-
-      // Fade out current callout
-      setShowCallout(false)
-
-      // After fade-out pause, show new phrase
-      fadeTimeoutRef.current = setTimeout(() => {
-        setCurrentSection(found)
-        setPhraseKey(k => k + 1)
-        setShowCallout(true)
-
-        // Auto-hide after 5s
-        autoHideRef.current = setTimeout(() => {
-          setShowCallout(false)
-        }, 5000)
-      }, 600)
+      // Auto-hide after 5s
+      timerRef.current = setTimeout(() => {
+        setShowCallout(false)
+        isVisibleRef.current = false
+      }, 5000)
     }
-  }, [isOpen])
 
-  useEffect(() => {
-    window.addEventListener('scroll', detectSection, { passive: true })
-    detectSection()
-    return () => window.removeEventListener('scroll', detectSection)
-  }, [detectSection])
+    if (isVisibleRef.current) {
+      // Currently showing — fade out first, then reveal new phrase
+      setShowCallout(false)
+      isVisibleRef.current = false
+      timerRef.current = setTimeout(reveal, 600)
+    } else {
+      // Hidden — reveal immediately
+      reveal()
+    }
+  }, [])
 
-  // Hide callout when chat opens
+  // Detect sections via IntersectionObserver (more reliable than scroll handler)
   useEffect(() => {
     if (isOpen) {
       setShowCallout(false)
-      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
-      if (autoHideRef.current) clearTimeout(autoHideRef.current)
+      isVisibleRef.current = false
+      if (timerRef.current) clearTimeout(timerRef.current)
+      return
     }
-  }, [isOpen])
 
-  // Cleanup timers on unmount
+    const sectionIds = Object.keys(SECTION_DATA)
+    const elements = sectionIds
+      .map(id => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null)
+
+    if (elements.length === 0) return
+
+    const ratios = sectionRatiosRef.current
+    ratios.clear()
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0)
+        }
+
+        // Pick the section with the highest visible ratio
+        let best: string | null = null
+        let bestRatio = 0
+        for (const [id, ratio] of ratios) {
+          if (ratio > bestRatio) {
+            best = id
+            bestRatio = ratio
+          }
+        }
+
+        if (best && best !== prevSectionRef.current) {
+          prevSectionRef.current = best
+          triggerCallout(best)
+        }
+      },
+      { threshold: [0, 0.15, 0.3, 0.5, 0.7] },
+    )
+
+    for (const el of elements) {
+      observer.observe(el)
+    }
+
+    return () => observer.disconnect()
+  }, [isOpen, triggerCallout])
+
+  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
-      if (autoHideRef.current) clearTimeout(autoHideRef.current)
+      if (timerRef.current) clearTimeout(timerRef.current)
     }
   }, [])
 
