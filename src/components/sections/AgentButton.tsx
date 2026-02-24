@@ -176,48 +176,39 @@ export function AgentButton() {
 
   return (
     <>
-      {/* Callout - Frase + Logo + Seta */}
+      {/* Callout - "Tem dúvidas? pergunte a nossa IA" */}
       <div
-        className={`fixed z-[999] left-0 right-0 bottom-6 flex items-center justify-center ${
+        className={`fixed z-[999] ${
           showCallout && !isOpen ? 'agent-callout--visible' : 'agent-callout--hidden'
         }`}
+        style={{
+          right: 'calc(24px + 64px + 60px)',
+          bottom: '24px',
+        }}
       >
-        <div className="flex items-center gap-6 md:gap-10 lg:gap-16 px-4">
-          {/* Text - Left side */}
+        <div className="flex items-center gap-4">
+          {/* Text */}
           <div
             className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--fadein' : 'agent-callout-text--fadeout'}`}
             style={{
               fontFamily: 'Cinzel, serif',
+              fontSize: '25px',
               fontWeight: 'bold',
               color: '#ffffff',
               textAlign: 'right',
               lineHeight: '1.3',
             }}
           >
-            <span className="block text-[clamp(14px,2.5vw,25px)]">Tem dúvidas?</span>
-            <span className="block text-[clamp(14px,2.5vw,25px)]">pergunte a</span>
-            <span className="block text-[clamp(14px,2.5vw,25px)]">nossa IA</span>
+            <span style={{ display: 'block' }}>Tem dúvidas?</span>
+            <span style={{ display: 'block' }}>pergunte a</span>
+            <span style={{ display: 'block' }}>nossa IA</span>
           </div>
 
-          {/* Logo - Center */}
-          <div
-            className={`agent-callout-logo ${showCallout && !isOpen ? 'agent-callout-logo--fadein' : 'agent-callout-logo--fadeout'}`}
-          >
-            <img
-              src="/images/arbache-logo-white.png"
-              alt="Arbache Consulting"
-              className="h-auto"
-              style={{
-                width: 'clamp(150px, 25vw, 450px)',
-                maxWidth: '450px',
-              }}
-            />
-          </div>
-
-          {/* Horizontal arrow pointing to agent - Right side */}
+          {/* Horizontal arrow pointing to agent */}
           <div className="agent-callout-arrow">
             <svg
-              className="w-[clamp(30px,5vw,40px)] h-auto"
+              width="40"
+              height="24"
               viewBox="0 0 40 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -584,42 +575,6 @@ export function AgentButton() {
 
         .agent-callout-text--fadeout {
           animation: smoothFadeOut 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-        }
-
-        /* Smooth fade in/out animation for callout logo */
-        .agent-callout-logo {
-          opacity: 0;
-        }
-
-        .agent-callout-logo--fadein {
-          animation: logoFadeIn 1.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-          animation-delay: 0.3s;
-        }
-
-        .agent-callout-logo--fadeout {
-          animation: logoFadeOut 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-        }
-
-        @keyframes logoFadeIn {
-          0% {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        @keyframes logoFadeOut {
-          0% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: scale(0.9);
-          }
         }
 
         @keyframes smoothFadeIn {

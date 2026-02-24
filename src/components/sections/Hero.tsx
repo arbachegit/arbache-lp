@@ -50,9 +50,26 @@ export function Hero() {
           <span>Sustentabilidade transforma o ser humano e os negócios</span>
         </h1>
 
+        {/* Logo Arbache Consulting - Centralizado */}
+        <div
+          className={cn(
+            'flex justify-center mb-8 reveal reveal-delay-1',
+            contentVisible && 'visible'
+          )}
+        >
+          <img
+            src="/images/arbache-logo-white.png"
+            alt="Arbache Consulting"
+            className="h-auto"
+            style={{
+              width: 'clamp(200px, 35vw, 450px)',
+            }}
+          />
+        </div>
+
         <p
           className={cn(
-            'font-tagline text-[clamp(1rem,2.5vw,1.4rem)] text-white/85 mb-10 max-w-[700px] mx-auto reveal reveal-delay-1',
+            'font-tagline text-[clamp(1rem,2.5vw,1.4rem)] text-white/85 mb-10 max-w-[700px] mx-auto reveal reveal-delay-2',
             contentVisible && 'visible'
           )}
         >
@@ -62,7 +79,7 @@ export function Hero() {
 
         <div
           className={cn(
-            'flex gap-4 justify-center flex-wrap mb-12 reveal reveal-delay-2',
+            'flex gap-4 justify-center flex-wrap mb-12 reveal reveal-delay-3',
             contentVisible && 'visible'
           )}
         >
@@ -82,7 +99,7 @@ export function Hero() {
 
         <div
           className={cn(
-            'flex gap-5 justify-center flex-wrap reveal reveal-delay-3',
+            'flex gap-5 justify-center flex-wrap reveal reveal-delay-4',
             contentVisible && 'visible'
           )}
         >
