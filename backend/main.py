@@ -309,6 +309,8 @@ class ChatRequestV1(BaseModel):
     model_config = ConfigDict(strict=True, extra='forbid')
 
     message: str = Field(..., min_length=1, max_length=2000)
+    section: Optional[str] = Field(None, max_length=50)
+    sectionContext: Optional[str] = Field(None, max_length=200)
 
     @field_validator('message')
     @classmethod
@@ -565,7 +567,10 @@ async def chat(request: ChatRequestV1):
     request_id = str(uuid.uuid4())
     message = request.message
 
-    secure_log("info", "Chat request received", request_id, message_length=len(message))
+    secure_log("info", "Chat request received", request_id,
+               message_length=len(message),
+               section=request.section,
+               section_context=request.sectionContext)
 
     # 1. Boundary check
     if not check_boundary(message):

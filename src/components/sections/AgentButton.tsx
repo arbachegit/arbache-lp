@@ -1,6 +1,55 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from 'react'
+
+// ===================================
+// SECTION DATA MAP
+// ===================================
+
+interface SectionInfo {
+  callout: [string, string, string]
+  context: string
+}
+
+const SECTION_DATA: Record<string, SectionInfo> = {
+  hero: {
+    callout: ['Tem dúvidas?', 'Pergunte a', 'nossa IA'],
+    context: 'Página inicial',
+  },
+  proposito: {
+    callout: ['Nosso Propósito', 'Pergunte a', 'nossa IA'],
+    context: 'Missão, visão e valores',
+  },
+  'quem-somos': {
+    callout: ['Quem Somos', 'Pergunte a', 'nossa IA'],
+    context: 'Equipe Arbache',
+  },
+  'nosso-ecossistema': {
+    callout: ['Nosso Ecossistema', 'Pergunte a', 'nossa IA'],
+    context: 'Ecossistema de soluções',
+  },
+  'solucoes-org': {
+    callout: ['Nossas Soluções', 'Pergunte a', 'nossa IA'],
+    context: 'Programas para organizações',
+  },
+  colabs: {
+    callout: ['Nossos Parceiros', 'Pergunte a', 'nossa IA'],
+    context: 'Co-Labs parceiros',
+  },
+  esg: {
+    callout: ['Nosso ESG', 'Pergunte a', 'nossa IA'],
+    context: 'Sustentabilidade',
+  },
+  contato: {
+    callout: ['Dúvidas?', 'Pergunte a', 'nossa IA'],
+    context: 'Contato',
+  },
+}
+
+const DEFAULT_SECTION: SectionInfo = {
+  callout: ['Tem dúvidas?', 'Pergunte a', 'nossa IA'],
+  context: 'Página inicial',
+}
 
 // Agent icon - minimal chat bubble (without dots)
 const AgentIcon = ({ isPulsing = false }: { isPulsing?: boolean }) => (
@@ -48,85 +97,88 @@ export function AgentButton() {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'agent'; content: string }>>([])
   const [isTyping, setIsTyping] = useState(false)
-  const [reducedMotion, setReducedMotion] = useState(false)
   const [showCallout, setShowCallout] = useState(false)
-  const [isAtBoundary, setIsAtBoundary] = useState(false)
+  const [currentSection, setCurrentSection] = useState<string | null>(null)
+  const [phraseKey, setPhraseKey] = useState(0)
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const prevSectionRef = useRef<string | null>(null)
+  const autoHideRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mediaQuery.matches)
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
+  // reducedMotion via useSyncExternalStore (no setState-in-effect)
+  const reducedMotion = useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+      mq.addEventListener('change', cb)
+      return () => mq.removeEventListener('change', cb)
+    },
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () => false
+  )
 
-  // Debounced fade control - independent of scroll speed
-  useEffect(() => {
-    if (isOpen) {
-      setShowCallout(false)
-      return
-    }
+  // Current section info for callout text and context
+  const sectionInfo = currentSection ? (SECTION_DATA[currentSection] ?? DEFAULT_SECTION) : DEFAULT_SECTION
 
-    // Clear any pending timeout
-    if (fadeTimeoutRef.current) {
-      clearTimeout(fadeTimeoutRef.current)
-    }
-
-    if (isAtBoundary) {
-      // Fade in: small delay to avoid flickering
-      fadeTimeoutRef.current = setTimeout(() => {
-        setShowCallout(true)
-      }, 150)
-    } else {
-      // Fade out: muito mais lento para UX suave
-      // Aguarda 4.5s para garantir que a animação de 4s complete
-      fadeTimeoutRef.current = setTimeout(() => {
-        setShowCallout(false)
-      }, 4500)
-    }
-
-    return () => {
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current)
-      }
-    }
-  }, [isAtBoundary, isOpen])
-
-  // Detect section boundaries
-  const checkSectionBoundary = useCallback(() => {
-    if (isOpen) {
-      setIsAtBoundary(false)
-      return
-    }
+  // Detect which section is at 75% of viewport (where the button sits)
+  const detectSection = useCallback(() => {
+    if (isOpen) return
 
     const sections = document.querySelectorAll('section[id]')
-    const agentButton = document.querySelector('.agent-button-container')
-    if (!agentButton) return
+    const checkY = window.innerHeight * 0.75
 
-    const agentRect = agentButton.getBoundingClientRect()
-    const agentCenter = agentRect.top + agentRect.height / 2
-
-    let atBoundary = false
-
+    let found: string | null = null
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect()
-      const bottomThreshold = rect.bottom
-      const tolerance = 150 // pixels from section bottom
-
-      if (agentCenter >= bottomThreshold - tolerance && agentCenter <= bottomThreshold + tolerance) {
-        atBoundary = true
+      if (rect.top <= checkY && rect.bottom >= checkY) {
+        found = section.id
       }
     })
 
-    setIsAtBoundary(atBoundary)
+    if (found && found !== prevSectionRef.current) {
+      prevSectionRef.current = found
+
+      // Clear any pending timers
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      if (autoHideRef.current) clearTimeout(autoHideRef.current)
+
+      // Fade out current callout
+      setShowCallout(false)
+
+      // After fade-out pause, show new phrase
+      fadeTimeoutRef.current = setTimeout(() => {
+        setCurrentSection(found)
+        setPhraseKey(k => k + 1)
+        setShowCallout(true)
+
+        // Auto-hide after 5s
+        autoHideRef.current = setTimeout(() => {
+          setShowCallout(false)
+        }, 5000)
+      }, 600)
+    }
   }, [isOpen])
 
   useEffect(() => {
-    window.addEventListener('scroll', checkSectionBoundary, { passive: true })
-    checkSectionBoundary()
-    return () => window.removeEventListener('scroll', checkSectionBoundary)
-  }, [checkSectionBoundary])
+    window.addEventListener('scroll', detectSection, { passive: true })
+    detectSection()
+    return () => window.removeEventListener('scroll', detectSection)
+  }, [detectSection])
+
+  // Hide callout when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      setShowCallout(false)
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      if (autoHideRef.current) clearTimeout(autoHideRef.current)
+    }
+  }, [isOpen])
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current)
+      if (autoHideRef.current) clearTimeout(autoHideRef.current)
+    }
+  }, [])
 
   const handleSend = async () => {
     if (!message.trim()) return
@@ -145,7 +197,11 @@ export function AgentButton() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({
+          message: userMessage,
+          section: currentSection ?? undefined,
+          sectionContext: currentSection ? sectionInfo.context : undefined,
+        }),
       })
 
       if (!response.ok) {
@@ -177,7 +233,7 @@ export function AgentButton() {
 
   return (
     <>
-      {/* Callout - "Tem dúvidas? pergunte a nossa IA" */}
+      {/* Callout - dynamic phrase per section */}
       <div
         className={`fixed z-[999] ${
           showCallout && !isOpen ? 'agent-callout--visible' : 'agent-callout--hidden'
@@ -188,8 +244,9 @@ export function AgentButton() {
         }}
       >
         <div className="flex items-center gap-4">
-          {/* Text */}
+          {/* Text - key forces re-mount for animation restart */}
           <div
+            key={phraseKey}
             className={`agent-callout-text ${showCallout && !isOpen ? 'agent-callout-text--fadein' : 'agent-callout-text--fadeout'}`}
             style={{
               fontFamily: 'Cinzel, serif',
@@ -200,9 +257,27 @@ export function AgentButton() {
               lineHeight: '1.3',
             }}
           >
-            <span style={{ display: 'block' }}>Tem dúvidas?</span>
-            <span style={{ display: 'block' }}>pergunte a</span>
-            <span style={{ display: 'block' }}>nossa IA</span>
+            <span style={{ display: 'block' }}>{sectionInfo.callout[0]}</span>
+            <span style={{ display: 'block' }}>{sectionInfo.callout[1]}</span>
+            <span style={{ display: 'block' }}>{sectionInfo.callout[2]}</span>
+            {/* "ou entre em contato" link */}
+            <a
+              href="#contato"
+              style={{
+                display: 'block',
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: '11px',
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: '#ffffff',
+                opacity: 0.5,
+                textDecoration: 'none',
+                marginTop: '6px',
+              }}
+            >
+              ou entre em contato
+            </a>
           </div>
 
           {/* Horizontal arrow pointing to agent */}
