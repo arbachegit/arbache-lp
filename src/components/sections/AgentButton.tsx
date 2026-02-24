@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // Agent icon - minimal chat bubble (without dots)
 const AgentIcon = ({ isPulsing = false }: { isPulsing?: boolean }) => (
@@ -50,6 +50,8 @@ export function AgentButton() {
   const [isTyping, setIsTyping] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [showCallout, setShowCallout] = useState(false)
+  const [isAtBoundary, setIsAtBoundary] = useState(false)
+  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -59,10 +61,41 @@ export function AgentButton() {
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
 
+  // Debounced fade control - independent of scroll speed
+  useEffect(() => {
+    if (isOpen) {
+      setShowCallout(false)
+      return
+    }
+
+    // Clear any pending timeout
+    if (fadeTimeoutRef.current) {
+      clearTimeout(fadeTimeoutRef.current)
+    }
+
+    if (isAtBoundary) {
+      // Fade in: small delay to avoid flickering
+      fadeTimeoutRef.current = setTimeout(() => {
+        setShowCallout(true)
+      }, 100)
+    } else {
+      // Fade out: longer delay so animation completes regardless of scroll speed
+      fadeTimeoutRef.current = setTimeout(() => {
+        setShowCallout(false)
+      }, 2500) // Wait for fade out animation to complete
+    }
+
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current)
+      }
+    }
+  }, [isAtBoundary, isOpen])
+
   // Detect section boundaries
   const checkSectionBoundary = useCallback(() => {
     if (isOpen) {
-      setShowCallout(false)
+      setIsAtBoundary(false)
       return
     }
 
@@ -73,7 +106,7 @@ export function AgentButton() {
     const agentRect = agentButton.getBoundingClientRect()
     const agentCenter = agentRect.top + agentRect.height / 2
 
-    let isAtBoundary = false
+    let atBoundary = false
 
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect()
@@ -81,11 +114,11 @@ export function AgentButton() {
       const tolerance = 150 // pixels from section bottom
 
       if (agentCenter >= bottomThreshold - tolerance && agentCenter <= bottomThreshold + tolerance) {
-        isAtBoundary = true
+        atBoundary = true
       }
     })
 
-    setShowCallout(isAtBoundary)
+    setIsAtBoundary(atBoundary)
   }, [isOpen])
 
   useEffect(() => {
@@ -537,17 +570,17 @@ export function AgentButton() {
         }
 
         .agent-callout-text--fadein {
-          animation: smoothFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: smoothFadeIn 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
 
         .agent-callout-text--fadeout {
-          animation: smoothFadeOut 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: smoothFadeOut 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
 
         @keyframes smoothFadeIn {
           0% {
             opacity: 0;
-            transform: translateX(10px);
+            transform: translateX(15px);
           }
           100% {
             opacity: 1;
@@ -562,7 +595,7 @@ export function AgentButton() {
           }
           100% {
             opacity: 0;
-            transform: translateX(10px);
+            transform: translateX(15px);
           }
         }
 
