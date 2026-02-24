@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 
 // ===================================
 // SECTION DATA MAP
@@ -102,8 +102,6 @@ export function AgentButton() {
   const [phraseKey, setPhraseKey] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const prevSectionRef = useRef<string | null>(null)
-  const isVisibleRef = useRef(false)
-  const sectionRatiosRef = useRef<Map<string, number>>(new Map())
 
   // reducedMotion via useSyncExternalStore (no setState-in-effect)
   const reducedMotion = useSyncExternalStore(
@@ -119,90 +117,55 @@ export function AgentButton() {
   // Current section info for callout text and context
   const sectionInfo = currentSection ? (SECTION_DATA[currentSection] ?? DEFAULT_SECTION) : DEFAULT_SECTION
 
-  // Show callout for a given section with fade-out → pause → fade-in
-  const triggerCallout = useCallback((sectionId: string) => {
-    if (timerRef.current) clearTimeout(timerRef.current)
-
-    const reveal = () => {
-      setCurrentSection(sectionId)
-      setPhraseKey(k => k + 1)
-      setShowCallout(true)
-      isVisibleRef.current = true
-
-      // Auto-hide after 5s
-      timerRef.current = setTimeout(() => {
-        setShowCallout(false)
-        isVisibleRef.current = false
-      }, 5000)
-    }
-
-    if (isVisibleRef.current) {
-      // Currently showing — fade out first, then reveal new phrase
-      setShowCallout(false)
-      isVisibleRef.current = false
-      timerRef.current = setTimeout(reveal, 600)
-    } else {
-      // Hidden — reveal immediately
-      reveal()
-    }
-  }, [])
-
-  // Detect sections via IntersectionObserver (more reliable than scroll handler)
+  // Section detection via scroll handler — checks every frame which section
+  // contains the viewport midpoint. O(8) per scroll = trivially fast.
   useEffect(() => {
     if (isOpen) {
       setShowCallout(false)
-      isVisibleRef.current = false
       if (timerRef.current) clearTimeout(timerRef.current)
       return
     }
 
     const sectionIds = Object.keys(SECTION_DATA)
-    const elements = sectionIds
-      .map(id => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null)
 
-    if (elements.length === 0) return
+    const detectSection = () => {
+      const midY = window.innerHeight * 0.5
+      let found: string | null = null
 
-    const ratios = sectionRatiosRef.current
-    ratios.clear()
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          ratios.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0)
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        const rect = el.getBoundingClientRect()
+        if (rect.top <= midY && rect.bottom > midY) {
+          found = id
+          break // sections don't overlap — first match is enough
         }
+      }
 
-        // Pick the section with the highest visible ratio
-        let best: string | null = null
-        let bestRatio = 0
-        for (const [id, ratio] of ratios) {
-          if (ratio > bestRatio) {
-            best = id
-            bestRatio = ratio
-          }
-        }
+      if (found && found !== prevSectionRef.current) {
+        prevSectionRef.current = found
+        if (timerRef.current) clearTimeout(timerRef.current)
 
-        if (best && best !== prevSectionRef.current) {
-          prevSectionRef.current = best
-          triggerCallout(best)
-        }
-      },
-      { threshold: [0, 0.15, 0.3, 0.5, 0.7] },
-    )
+        setCurrentSection(found)
+        setPhraseKey(k => k + 1)
+        setShowCallout(true)
 
-    for (const el of elements) {
-      observer.observe(el)
+        // Auto-hide after 5s
+        timerRef.current = setTimeout(() => {
+          setShowCallout(false)
+        }, 5000)
+      }
     }
 
-    return () => observer.disconnect()
-  }, [isOpen, triggerCallout])
+    window.addEventListener('scroll', detectSection, { passive: true })
+    // Run once on mount so hero section triggers immediately
+    detectSection()
 
-  // Cleanup timer on unmount
-  useEffect(() => {
     return () => {
+      window.removeEventListener('scroll', detectSection)
       if (timerRef.current) clearTimeout(timerRef.current)
     }
-  }, [])
+  }, [isOpen])
 
   const handleSend = async () => {
     if (!message.trim()) return
@@ -474,7 +437,7 @@ export function AgentButton() {
 
       {/* Agent Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[1001] w-[380px] h-[520px] flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-[#2a2a30]"
+        <div className="fixed bottom-6 right-6 z-[1001] w-[800px] h-[500px] flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-[#2a2a30]"
           style={{ background: '#141418' }}
         >
           {/* Header */}
