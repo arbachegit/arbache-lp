@@ -77,13 +77,13 @@ export function QuemSomos() {
     <section
       id="quem-somos"
       className="py-[100px] relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #F5F5F5, #E8E8E8)' }}
+      style={{ background: '#212121' }}
     >
       {/* Subtle pattern */}
       <div
-        className="absolute inset-0 opacity-50"
+        className="absolute inset-0 opacity-30"
         style={{
-          background: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='0.5' fill='%23999' opacity='.15'/%3E%3C/svg%3E")`,
+          background: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='0.5' fill='%23fff' opacity='.15'/%3E%3C/svg%3E")`,
         }}
       />
 
@@ -91,7 +91,7 @@ export function QuemSomos() {
         <div ref={titleRef}>
           <h2
             className={cn(
-              'font-section text-[clamp(1.8rem,3.5vw,2.8rem)] mb-4 text-[#1a1a1a] reveal',
+              'font-section text-[clamp(1.8rem,3.5vw,2.8rem)] mb-4 text-white reveal',
               titleVisible && 'visible'
             )}
           >
@@ -99,7 +99,7 @@ export function QuemSomos() {
           </h2>
           <p
             className={cn(
-              'font-tagline text-[clamp(1rem,2vw,1.25rem)] text-[#666] max-w-[650px] mx-auto mb-[60px] reveal reveal-delay-1',
+              'font-tagline text-[clamp(1rem,2vw,1.25rem)] text-[#999] max-w-[650px] mx-auto mb-[60px] reveal reveal-delay-1',
               titleVisible && 'visible'
             )}
           >
