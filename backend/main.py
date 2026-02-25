@@ -15,10 +15,12 @@ import re
 import uuid
 import json
 import asyncio
+import time
 from typing import Optional, Any
 from datetime import datetime
 from contextlib import asynccontextmanager
 from functools import wraps
+from collections import defaultdict
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
@@ -345,6 +347,355 @@ class VersionResponseV1(BaseModel):
     timestamp: str
 
 
+# --- V2 Schemas ---
+
+class ConversationMessage(BaseModel):
+    role: str = Field(..., pattern=r'^(user|assistant)$')
+    content: str = Field(..., max_length=2000)
+
+
+class ChatRequestV2(BaseModel):
+    """Request para endpoint de chat - v2."""
+    model_config = ConfigDict(strict=True, extra='forbid')
+
+    message: str = Field(..., min_length=1, max_length=2000)
+    section: Optional[str] = Field(None, max_length=50)
+    sectionContext: Optional[str] = Field(None, max_length=500)
+    conversationHistory: Optional[list[ConversationMessage]] = Field(None)
+
+    @field_validator('message')
+    @classmethod
+    def normalize_message(cls, v: str) -> str:
+        return v.strip()
+
+    @field_validator('conversationHistory')
+    @classmethod
+    def limit_history(cls, v: Optional[list[ConversationMessage]]) -> Optional[list[ConversationMessage]]:
+        if v and len(v) > 6:
+            return v[-6:]
+        return v
+
+
+class ChatResponseV2(BaseModel):
+    """Response do endpoint de chat - v2."""
+    model_config = ConfigDict(strict=True)
+
+    response: str
+    badges: list[str]
+    suggestions: list[str]
+    request_id: str
+
+
+# ===================================
+# V2 SECTION CONTENT (server-side mirror)
+# ===================================
+
+SECTION_CONTENT_V2: dict[str, dict] = {
+    'hero': {
+        'summary': 'A Arbache Consulting transforma organizações por meio da educação de liderança, inovação e sustentabilidade.',
+        'badges': ['Educação Corporativa', 'Liderança', 'ESG', 'Inovação'],
+        'suggestions': [
+            'O que a Arbache Consulting faz?',
+            'Quem é Ana Paula Arbache?',
+            'Quais serviços vocês oferecem?',
+        ],
+    },
+    'proposito': {
+        'summary': 'Nosso propósito é transformar o mundo por meio da educação, com excelência, ética e valores.',
+        'badges': ['Missão', 'Visão', 'Valores', 'Excelência'],
+        'suggestions': [
+            'Qual a missão da Arbache?',
+            'Quais são os valores da empresa?',
+            'O que diferencia a Arbache?',
+        ],
+    },
+    'quem-somos': {
+        'summary': 'Equipe de especialistas em educação corporativa, tecnologia e sustentabilidade.',
+        'badges': ['Ana Paula Arbache', 'Fernando Arbache', 'Alexandre Vieira', 'Fernando Bastos'],
+        'suggestions': [
+            'Qual a formação da Ana Paula?',
+            'Quem são os especialistas?',
+            'Quais áreas de expertise?',
+        ],
+    },
+    'nosso-ecossistema': {
+        'summary': 'Seis pilares integrados: Educação, Liderança, Carreira, RH, IA e ESG.',
+        'badges': ['Educação Corporativa', 'Liderança', 'Gestão de Carreira', 'RH', 'Inovação e IA', 'ESG'],
+        'suggestions': [
+            'Quais são os pilares do ecossistema?',
+            'Qual pilar é ideal para minha empresa?',
+            'Como a IA se integra?',
+        ],
+    },
+    'solucoes-org': {
+        'summary': '11 soluções integradas em educação, liderança, assessment, mentoria e consultoria.',
+        'badges': ['Trilhas Educacionais', 'Assessment IA', 'Mentoria', 'Formação de Lideranças', 'Palestras'],
+        'suggestions': [
+            'Como funcionam as trilhas?',
+            'O que é o Assessment com IA?',
+            'Quais tipos de mentoria?',
+        ],
+    },
+    'colabs': {
+        'summary': 'Laboratório de inovação com parceiros como MIT, Senac e Resorts Brasil.',
+        'badges': ['Resorts Brasil', 'MIT', 'Senac', 'Escola de Etiqueta', 'Hotelier News'],
+        'suggestions': [
+            'Quem são os parceiros?',
+            'Como funciona o Co.Labs?',
+            'Como se tornar parceiro?',
+        ],
+    },
+    'esg': {
+        'summary': 'Referência em ESG com HubMulher, Knowledge Hub e reconhecimento SDG Pioneer da ONU.',
+        'badges': ['HubMulher', 'Knowledge Hub', 'SDG Pioneer', 'Sustentabilidade'],
+        'suggestions': [
+            'O que é o HubMulher?',
+            'Qual o papel nos ODS da ONU?',
+            'Como atuam em sustentabilidade?',
+        ],
+    },
+    'contato': {
+        'summary': 'Entre em contato para saber mais sobre nossas soluções.',
+        'badges': ['Fale Conosco', 'Agende uma Conversa'],
+        'suggestions': [
+            'Como agendar uma reunião?',
+            'Quais soluções para minha empresa?',
+            'Vocês atendem qual porte?',
+        ],
+    },
+}
+
+
+# ===================================
+# V2 FAQ (instant responses)
+# ===================================
+
+FAQ_V2: dict[str, str] = {
+    'o que a arbache faz':
+        'A Arbache Consulting oferece soluções integradas em educação corporativa, liderança, ESG e sustentabilidade. Ajudamos organizações a desenvolver pessoas e gerar impacto positivo. Quer saber mais sobre alguma solução específica?',
+    'quem é ana paula arbache':
+        'Ana Paula Arbache é a fundadora e CEO da Arbache Consulting. PhD, SDG Pioneer reconhecida pela ONU, e especialista em educação corporativa, liderança e sustentabilidade com mais de duas décadas de experiência.',
+    'como entrar em contato':
+        'Você pode entrar em contato pelo formulário na seção Contato do nosso site. Nossa equipe retorna em até 24h úteis.',
+    'quais serviços vocês oferecem':
+        'Oferecemos 11 soluções integradas: Trilhas Educacionais, Curadoria, Formação de Lideranças, Assessment com IA, Consultoria ESG, Mentoria, Auditorias, Imersões, Networking, Gestão de RH e Palestras.',
+    'o que é o hubmulher':
+        'O HubMulher é uma iniciativa voltada para o empoderamento feminino e liderança da mulher no mercado de trabalho. Promovemos eventos, mentorias e conteúdos para fortalecer a presença feminina em posições de liderança.',
+    'o que é o colabs':
+        'O Co.Labs é o laboratório de inovação e colaboração da Arbache. Reunimos parceiros como MIT, Senac e Resorts Brasil para criar soluções de alto impacto em educação e liderança.',
+    'qual a missão da arbache':
+        'Nossa missão é transformar organizações e pessoas por meio da educação de excelência. Combinamos liderança, sustentabilidade e inovação para resultados extraordinários.',
+    'como funciona o assessment com ia':
+        'O Assessment de Soft Skills com IA mapeia competências comportamentais usando inteligência artificial. Oferece diagnósticos precisos e planos de desenvolvimento personalizados para equipes e líderes.',
+    'como funcionam as trilhas educacionais':
+        'As Trilhas Educacionais são programas personalizados de aprendizagem contínua com master classes, workshops práticos e acompanhamento para desenvolver competências alinhadas aos objetivos da sua organização.',
+    'como agendar uma reunião':
+        'Para agendar, preencha o formulário na seção Contato indicando a solução de interesse. Nossa equipe retorna em até 24h úteis para alinhar a melhor data.',
+}
+
+
+# ===================================
+# V2 RATE LIMITING (in-memory)
+# ===================================
+
+RATE_LIMIT_WINDOW = 60  # seconds
+RATE_LIMIT_MAX = 20  # requests per window
+_rate_limit_store: dict[str, list[float]] = defaultdict(list)
+
+
+def check_rate_limit(client_ip: str) -> bool:
+    """Returns True if request is allowed, False if rate-limited."""
+    now = time.time()
+    window_start = now - RATE_LIMIT_WINDOW
+    # Clean old entries
+    _rate_limit_store[client_ip] = [
+        t for t in _rate_limit_store[client_ip] if t > window_start
+    ]
+    if len(_rate_limit_store[client_ip]) >= RATE_LIMIT_MAX:
+        return False
+    _rate_limit_store[client_ip].append(now)
+    return True
+
+
+# ===================================
+# V2 HELPERS
+# ===================================
+
+ELABORATE_KEYWORDS = [
+    "como funciona", "explique", "compare", "mercado", "dados",
+    "detalhe", "aprofunde", "pesquise", "tendência", "estratégia",
+    "diferença entre", "por que", "exemplos de", "casos de",
+]
+
+
+def is_elaborate_question(message: str) -> bool:
+    """Detecta se a pergunta requer pesquisa mais aprofundada."""
+    lower = message.lower()
+    if len(lower.split()) >= 10:
+        return True
+    return any(kw in lower for kw in ELABORATE_KEYWORDS)
+
+
+def check_faq_v2(message: str) -> Optional[str]:
+    """Tenta encontrar uma resposta FAQ."""
+    lower = message.lower().strip()
+    for key, answer in FAQ_V2.items():
+        if key in lower or lower in key:
+            return answer
+    return None
+
+
+def get_section_data_v2(section: Optional[str]) -> dict:
+    """Retorna dados da seção ou fallback para hero."""
+    return SECTION_CONTENT_V2.get(section or 'hero', SECTION_CONTENT_V2['hero'])
+
+
+def truncate_response(text: str, max_lines: int = 5) -> str:
+    """Trunca resposta para máximo de linhas."""
+    lines = [l for l in text.split('\n') if l.strip()]
+    if len(lines) <= max_lines:
+        return text
+    return '\n'.join(lines[:max_lines])
+
+
+def generate_follow_up_suggestions(message: str, section: Optional[str]) -> list[str]:
+    """Gera sugestões de follow-up baseadas na mensagem e seção."""
+    section_data = get_section_data_v2(section)
+    lower = message.lower()
+
+    suggestions: list[str] = []
+
+    # Se perguntou sobre serviços, sugere detalhes
+    if any(w in lower for w in ['serviço', 'solução', 'oferecem', 'fazem']):
+        suggestions = [
+            'Como funcionam as trilhas educacionais?',
+            'O que é o Assessment com IA?',
+            'Como contratar uma mentoria?',
+        ]
+    # Se perguntou sobre a fundadora, sugere mais sobre a empresa
+    elif any(w in lower for w in ['ana paula', 'fundadora', 'ceo']):
+        suggestions = [
+            'Quais são os serviços da Arbache?',
+            'O que é o ecossistema Arbache?',
+            'Como entrar em contato?',
+        ]
+    # Se perguntou sobre ESG
+    elif any(w in lower for w in ['esg', 'sustentabilidade', 'ods', 'onu']):
+        suggestions = [
+            'O que é o HubMulher?',
+            'Qual o papel nos ODS da ONU?',
+            'Como a Arbache atua em ESG?',
+        ]
+    else:
+        # Fallback: sugestões da seção atual
+        suggestions = section_data.get('suggestions', SECTION_CONTENT_V2['hero']['suggestions'])
+
+    return suggestions[:3]
+
+
+# V2 system prompt — tom de vendas, respostas curtas
+CURATOR_SYSTEM_PROMPT_V2 = f"""Você é o assistente virtual da Arbache Consulting.
+
+REGRAS:
+1. Responda APENAS sobre a Arbache Consulting, Ana Paula Arbache, serviços e parceiros
+2. Tom: profissional, acolhedor e orientado a vendas — guie o usuário para agendar uma conversa
+3. Respostas CURTAS: máximo 5 linhas. Seja direto e objetivo.
+4. NUNCA mencione fontes, referências, citações, URLs ou provedores de IA
+5. NUNCA use "[1]", "Segundo...", "De acordo com...", "Fonte:"
+6. Use português brasileiro
+7. Termine com uma pergunta ou call-to-action quando fizer sentido
+8. Se fora do escopo, redirecione gentilmente para os serviços
+
+CONTEXTO:
+{ARBACHE_CONTEXT}"""
+
+
+async def query_openai_v2(
+    question: str,
+    section_context: str,
+    conversation_history: Optional[list[ConversationMessage]],
+    request_id: str,
+) -> Optional[str]:
+    """OpenAI como LLM primária no v2."""
+    if not Config.has_openai():
+        secure_log("warn", "OpenAI not configured", request_id)
+        return None
+
+    secure_log("info", "V2: Querying OpenAI (primary)", request_id)
+
+    messages: list[dict] = [
+        {"role": "system", "content": CURATOR_SYSTEM_PROMPT_V2 + f"\n\nContexto da seção atual: {section_context}"},
+    ]
+
+    # Adicionar histórico de conversa
+    if conversation_history:
+        for msg in conversation_history[-6:]:
+            messages.append({"role": msg.role, "content": msg.content})
+
+    messages.append({"role": "user", "content": question})
+
+    data = await secure_fetch(
+        url="https://api.openai.com/v1/chat/completions",
+        request_id=request_id,
+        headers=Config.get_openai_headers(),
+        json_data={
+            "model": "gpt-4o-mini",
+            "messages": messages,
+            "max_tokens": 512,
+            "temperature": 0.7,
+        },
+    )
+
+    if data:
+        result = data.get("choices", [{}])[0].get("message", {}).get("content")
+        secure_log("info", "V2: OpenAI response received", request_id, has_content=bool(result))
+        return result
+
+    return None
+
+
+async def query_perplexity_v2(question: str, section_context: str, request_id: str) -> Optional[str]:
+    """Perplexity para perguntas elaboradas no v2, com curadoria via OpenAI."""
+    perplexity_raw = await query_perplexity(question, request_id)
+    if not perplexity_raw:
+        return None
+
+    # Curadoria via OpenAI
+    if not Config.has_openai():
+        return perplexity_raw
+
+    secure_log("info", "V2: Curating Perplexity response via OpenAI", request_id)
+
+    data = await secure_fetch(
+        url="https://api.openai.com/v1/chat/completions",
+        request_id=request_id,
+        headers=Config.get_openai_headers(),
+        json_data={
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": CURATOR_SYSTEM_PROMPT_V2},
+                {
+                    "role": "user",
+                    "content": (
+                        f'Pergunta: "{question}"\n\n'
+                        f'Informações pesquisadas (REMOVA todas as referências):\n{perplexity_raw}\n\n'
+                        'Reescreva em no máximo 5 linhas, tom de vendas, sem mencionar fontes.'
+                    ),
+                },
+            ],
+            "max_tokens": 512,
+            "temperature": 0.5,
+        },
+    )
+
+    if data:
+        result = data.get("choices", [{}])[0].get("message", {}).get("content")
+        if result:
+            return result
+
+    return perplexity_raw
+
+
 # ===================================
 # FUNÇÕES AUXILIARES
 # ===================================
@@ -646,6 +997,113 @@ async def chat(request: ChatRequestV1):
     )
 
     secure_log("info", "Chat response sent", request_id, response_length=len(cleaned_response))
+
+    return result
+
+
+# ===================================
+# V2 ENDPOINT
+# ===================================
+
+@app.post("/v2/chat", response_model=ChatResponseV2)
+async def chat_v2(request: ChatRequestV2, raw_request: Request):
+    """
+    Chat v2 — OpenAI primário, Perplexity para elaboradas, Claude fallback.
+
+    Fluxo:
+    1. Rate limit check
+    2. FAQ check → resposta instantânea
+    3. Pergunta simples → OpenAI com contexto da seção
+    4. Pergunta elaborada → Perplexity + curadoria OpenAI
+    5. Fallback → Claude
+    6. Fallback estático
+    7. Limpa + trunca (5 linhas)
+    8. Gera sugestões de follow-up
+    """
+    request_id = str(uuid.uuid4())
+    message = request.message
+    section = request.section
+    section_data = get_section_data_v2(section)
+    section_context = request.sectionContext or section_data.get('summary', '')
+
+    client_ip = raw_request.client.host if raw_request.client else "unknown"
+
+    secure_log("info", "V2 chat request received", request_id,
+               message_length=len(message), section=section)
+
+    # 1. Rate limit
+    if not check_rate_limit(client_ip):
+        secure_log("warn", "V2 rate limit exceeded", request_id, client_ip=client_ip)
+        raise HTTPException(status_code=429, detail="Muitas requisições. Aguarde um momento.")
+
+    # 2. FAQ check
+    faq_answer = check_faq_v2(message)
+    if faq_answer:
+        secure_log("info", "V2 FAQ hit", request_id)
+        return ChatResponseV2(
+            response=faq_answer,
+            badges=section_data.get('badges', []),
+            suggestions=generate_follow_up_suggestions(message, section),
+            request_id=request_id,
+        )
+
+    # 3. Boundary check
+    if not check_boundary(message):
+        secure_log("info", "V2 message outside boundary", request_id)
+        return ChatResponseV2(
+            response=(
+                "Sou o assistente da Arbache Consulting e posso ajudá-lo com "
+                "educação corporativa, liderança, ESG e sustentabilidade. "
+                "Como posso ajudar?"
+            ),
+            badges=section_data.get('badges', []),
+            suggestions=section_data.get('suggestions', []),
+            request_id=request_id,
+        )
+
+    response: Optional[str] = None
+
+    # 4. Pergunta elaborada → Perplexity + curadoria
+    if is_elaborate_question(message):
+        secure_log("info", "V2 elaborate question detected", request_id)
+        response = await query_perplexity_v2(message, section_context, request_id)
+
+    # 5. OpenAI (primário ou fallback de Perplexity)
+    if not response:
+        response = await query_openai_v2(
+            message, section_context, request.conversationHistory, request_id
+        )
+
+    # 6. Fallback → Claude
+    if not response:
+        response = await curate_with_anthropic(message, None, request_id)
+
+    # 7. Fallback estático
+    if not response:
+        secure_log("warn", "V2 using static fallback", request_id)
+        response = (
+            "A Arbache Consulting oferece soluções em educação corporativa, "
+            "liderança e sustentabilidade. Nossos serviços incluem trilhas educacionais, "
+            "assessment com IA, mentoria e consultoria ESG.\n\n"
+            "Quer saber mais? Agende uma conversa com nossa equipe!"
+        )
+
+    # 8. Clean + truncate
+    cleaned = clean_response(response)
+    cleaned = truncate_response(cleaned, max_lines=5)
+
+    # 9. Gera sugestões
+    suggestions = generate_follow_up_suggestions(message, section)
+
+    result = ChatResponseV2(
+        response=cleaned,
+        badges=section_data.get('badges', []),
+        suggestions=suggestions,
+        request_id=request_id,
+    )
+
+    secure_log("info", "V2 chat response sent", request_id,
+               response_length=len(cleaned))
 
     return result
 
