@@ -808,7 +808,7 @@ async def curate_with_anthropic(question: str, perplexity_response: Optional[str
         request_id=request_id,
         headers=Config.get_anthropic_headers(),
         json_data={
-            "model": "claude-3-5-haiku-20241022",
+            "model": "claude-haiku-4-5-20251001",
             "max_tokens": 1024,
             "system": CURATOR_SYSTEM_PROMPT,
             "messages": [{"role": "user", "content": user_message}],
