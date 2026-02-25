@@ -593,21 +593,36 @@ def generate_follow_up_suggestions(message: str, section: Optional[str]) -> list
     return suggestions[:3]
 
 
-# V2 system prompt — tom de vendas, respostas curtas
-CURATOR_SYSTEM_PROMPT_V2 = f"""Você é o assistente virtual da Arbache Consulting.
+# V2 system prompt — conversacional, humanizado, curto
+CURATOR_SYSTEM_PROMPT_V2 = f"""Você é o assistente virtual da Arbache Consulting — um consultor real em conversa com um visitante do site.
 
-REGRAS:
-1. Responda APENAS sobre a Arbache Consulting, Ana Paula Arbache, serviços e parceiros
-2. Tom: profissional, acolhedor e orientado a vendas — guie o usuário para agendar uma conversa
-3. Respostas CURTAS: máximo 5 linhas. Seja direto e objetivo.
-4. NUNCA mencione fontes, referências, citações, URLs ou provedores de IA
-5. NUNCA use "[1]", "Segundo...", "De acordo com...", "Fonte:"
-6. Use português brasileiro
-7. Termine com uma pergunta ou call-to-action quando fizer sentido
-8. Se fora do escopo, redirecione gentilmente para os serviços
+REGRAS DE CONVERSAÇÃO:
+1. Respostas CURTAS: máximo 2-3 frases. NUNCA despeje listas ou blocos de texto.
+2. SEMPRE termine com uma PERGUNTA para manter o diálogo. Exemplos: "Qual área te interessa mais?", "Quer saber mais sobre isso?"
+3. Para saudações (olá, oi, bom dia): responda com 1 frase calorosa + 1 pergunta. Exemplo: "Olá! Que bom ter você aqui. O que gostaria de saber sobre a Arbache?"
+4. NUNCA liste todos os serviços de uma vez. Mencione 1-2 mais relevantes ao contexto e pergunte se quer saber mais.
+5. Tom: humanizado, acolhedor, como um consultor real. Não robótico. Use linguagem natural.
+6. Guie naturalmente o visitante para agendar uma conversa com a equipe quando fizer sentido.
+7. NUNCA mencione fontes, referências, citações, URLs ou provedores de IA.
+8. NUNCA use "[1]", "Segundo...", "De acordo com...", "Fonte:"
+9. Use português brasileiro.
+10. Se fora do escopo da Arbache, redirecione gentilmente em 1 frase.
 
 CONTEXTO:
 {ARBACHE_CONTEXT}"""
+
+
+# Greeting detection
+GREETINGS_V2 = ["olá", "oi", "bom dia", "boa tarde", "boa noite", "hello", "hi", "e aí", "eai", "hey", "opa"]
+
+
+def is_greeting(message: str) -> bool:
+    """Detecta se a mensagem é uma saudação simples."""
+    lower = message.lower().strip().rstrip("!?.,:;")
+    if lower in GREETINGS_V2:
+        return True
+    words = lower.split()
+    return len(words) <= 3 and any(g in lower for g in GREETINGS_V2)
 
 
 async def query_openai_v2(
@@ -1047,6 +1062,16 @@ async def chat_v2(request: ChatRequestV2, raw_request: Request):
             request_id=request_id,
         )
 
+    # 2.5 Greeting check — resposta rápida sem LLM
+    if is_greeting(message) and not request.conversationHistory:
+        secure_log("info", "V2 greeting detected", request_id)
+        return ChatResponseV2(
+            response="Olá! Que bom ter você aqui. O que gostaria de saber sobre a Arbache Consulting?",
+            badges=section_data.get('badges', []),
+            suggestions=section_data.get('suggestions', []),
+            request_id=request_id,
+        )
+
     # 3. Boundary check
     if not check_boundary(message):
         secure_log("info", "V2 message outside boundary", request_id)
@@ -1078,14 +1103,12 @@ async def chat_v2(request: ChatRequestV2, raw_request: Request):
     if not response:
         response = await curate_with_anthropic(message, None, request_id)
 
-    # 7. Fallback estático
+    # 7. Fallback estático (conversacional, sem lista)
     if not response:
         secure_log("warn", "V2 using static fallback", request_id)
         response = (
-            "A Arbache Consulting oferece soluções em educação corporativa, "
-            "liderança e sustentabilidade. Nossos serviços incluem trilhas educacionais, "
-            "assessment com IA, mentoria e consultoria ESG.\n\n"
-            "Quer saber mais? Agende uma conversa com nossa equipe!"
+            "Trabalhamos com educação corporativa, liderança e sustentabilidade. "
+            "Posso te contar mais sobre qualquer uma dessas áreas — qual te interessa?"
         )
 
     # 8. Clean + truncate
