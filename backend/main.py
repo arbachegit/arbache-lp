@@ -711,6 +711,48 @@ async def query_perplexity_v2(question: str, section_context: str, request_id: s
     return perplexity_raw
 
 
+async def query_anthropic_v2(
+    question: str,
+    section_context: str,
+    conversation_history: Optional[list[ConversationMessage]],
+    request_id: str,
+) -> Optional[str]:
+    """Claude como fallback no v2, com prompt conversacional."""
+    if not Config.has_anthropic():
+        secure_log("warn", "Anthropic not configured", request_id)
+        return None
+
+    secure_log("info", "V2: Querying Anthropic (fallback)", request_id)
+
+    messages: list[dict] = []
+
+    # Adicionar histórico de conversa
+    if conversation_history:
+        for msg in conversation_history[-6:]:
+            messages.append({"role": msg.role, "content": msg.content})
+
+    messages.append({"role": "user", "content": question})
+
+    data = await secure_fetch(
+        url="https://api.anthropic.com/v1/messages",
+        request_id=request_id,
+        headers=Config.get_anthropic_headers(),
+        json_data={
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 256,
+            "system": CURATOR_SYSTEM_PROMPT_V2 + f"\n\nContexto da seção atual: {section_context}",
+            "messages": messages,
+        },
+    )
+
+    if data:
+        result = data.get("content", [{}])[0].get("text")
+        secure_log("info", "V2: Anthropic response received", request_id, has_content=bool(result))
+        return result
+
+    return None
+
+
 # ===================================
 # FUNÇÕES AUXILIARES
 # ===================================
@@ -734,7 +776,7 @@ def check_boundary(question: str) -> bool:
 
 
 def clean_response(text: str) -> str:
-    """Remove referências, citações e links da resposta."""
+    """Remove referências, citações, links e formatação markdown da resposta."""
     cleaned = re.sub(r'\[\d+\]', '', text)
     cleaned = re.sub(r'https?://[^\s]+', '', cleaned)
     cleaned = re.sub(
@@ -744,6 +786,12 @@ def clean_response(text: str) -> str:
         flags=re.IGNORECASE
     )
     cleaned = re.sub(r'\(.*?(?:2024|2025|2026).*?\)', '', cleaned)
+    # Remove markdown headers
+    cleaned = re.sub(r'^#{1,6}\s+', '', cleaned, flags=re.MULTILINE)
+    # Remove bold/italic markdown
+    cleaned = re.sub(r'\*{1,2}([^*]+)\*{1,2}', r'\1', cleaned)
+    # Remove bullet points
+    cleaned = re.sub(r'^[\s]*[-•]\s+', '', cleaned, flags=re.MULTILINE)
     cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
     return cleaned
 
@@ -1099,9 +1147,11 @@ async def chat_v2(request: ChatRequestV2, raw_request: Request):
             message, section_context, request.conversationHistory, request_id
         )
 
-    # 6. Fallback → Claude
+    # 6. Fallback → Claude (com prompt conversacional v2)
     if not response:
-        response = await curate_with_anthropic(message, None, request_id)
+        response = await query_anthropic_v2(
+            message, section_context, request.conversationHistory, request_id
+        )
 
     # 7. Fallback estático (conversacional, sem lista)
     if not response:
