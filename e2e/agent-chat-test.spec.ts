@@ -35,7 +35,7 @@ test.describe('Agent Chat API Test', () => {
     await expect(chatWindow).toBeVisible({ timeout: 5000 });
     
     // Type a message
-    const input = page.locator('input[placeholder="Digite sua mensagem..."]');
+    const input = page.locator('input[placeholder*="Arbache"], input[placeholder*="mensagem"]').first();
     await expect(input).toBeVisible();
     await input.fill('Olá, teste');
     
