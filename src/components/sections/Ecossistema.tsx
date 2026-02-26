@@ -295,7 +295,6 @@ export function Ecossistema() {
                 onMouseLeave={() => setHoveredNode(null)}
                 onFocus={() => setHoveredNode('hub')}
                 onBlur={() => setHoveredNode(null)}
-                style={{ transformOrigin: `${HUB.cx}px ${HUB.cy}px` }}
               >
                 {/* Hub base circle */}
                 <circle
@@ -339,7 +338,7 @@ export function Ecossistema() {
                 const { isActive, isSelected } = getNodeState(node.id)
                 const data = nodesData[node.id]
                 const arcRadius = node.r + 14
-                const animDuration = isActive ? '2.4s' : '3.6s'
+                const dotDuration = isActive ? '1.6s' : '2.4s'
 
                 return (
                   <g
@@ -391,7 +390,7 @@ export function Ecossistema() {
                     <circle className="node__dot" r="4" fill="var(--dotHex)">
                       {!reducedMotion && (
                         <animateMotion
-                          dur={animDuration}
+                          dur={dotDuration}
                           repeatCount="indefinite"
                           path={`M ${node.cx} ${node.cy - arcRadius} A ${arcRadius} ${arcRadius} 0 1 1 ${node.cx - 0.001} ${node.cy - arcRadius}`}
                         />
